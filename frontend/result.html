@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mission Status - Hack The Exit</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/registration.css">
+  <style>
+    html, body {
+      overflow-y: auto !important;
+      height: auto !important;
+      min-height: 100vh;
+    }
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .result-metric-card {
+      background: rgba(10, 18, 38, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem 0.6rem;
+      text-align: center;
+      transition: var(--transition-smooth);
+    }
+    .result-metric-card:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 12px var(--accent-cyan-glow);
+    }
+    .timer-label {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      margin-bottom: 0.35rem;
+    }
+    .result-metric-val {
+      font-size: 1.45rem;
+      font-family: var(--font-mono);
+      font-weight: bold;
+      color: var(--accent-cyan);
+    }
+    .leaderboard-scroll-container {
+      max-height: 480px;
+      overflow-y: auto;
+      overflow-x: auto;
+      border: 1.5px solid rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.08);
+    }
+    .main-container {
+      padding: 2rem 1.2rem 5rem 1.2rem !important;
+      justify-content: flex-start !important;
+      align-items: center !important;
+    }
+  </style>
+</head>
+<body class="result-page">
+
+  <header class="top-nav">
+    <div class="brand">HACK THE<span> EXIT</span></div>
+    <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-dark);" id="pc-display">TERMINAL: LOAD...</div>
+  </header>
+
+  <main class="main-container" style="flex-direction: column; gap: 2rem; width: 100%;">
+    
+    <!-- Result Card -->
+    <div class="glass-panel auth-card" id="result-card" style="max-width: 700px;">
+      <h1 class="card-title title-glow" id="result-status">MISSION STATUS</h1>
+      
+      <div id="alert-box" class="alert"></div>
+
+      <div class="results-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
+        <div class="result-metric-card">
+          <div class="timer-label">COMPLETION TIME</div>
+          <div class="result-metric-val" id="res-time">--:--</div>
+        </div>
+
+        <div class="result-metric-card">
+          <div class="timer-label">PUZZLES SOLVED</div>
+          <div class="result-metric-val" id="res-solved" style="color: var(--accent-green);">0</div>
+        </div>
+
+        <div class="result-metric-card">
+          <div class="timer-label">PASSKEYS USED</div>
+          <div class="result-metric-val" id="res-passkeys" style="color: var(--accent-magenta);">0</div>
+        </div>
+
+        <div class="result-metric-card">
+          <div class="timer-label">TOTAL ATTEMPTS</div>
+          <div class="result-metric-val" id="res-attempts">0</div>
+        </div>
+
+        <div class="result-metric-card">
+          <div class="timer-label">FINAL SCORE</div>
+          <div class="result-metric-val" id="res-score" style="color: var(--accent-cyan);">0</div>
+        </div>
+      </div>
+
+      <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.05rem; line-height: 1.6;" id="res-message">
+        Fetching mission logs...
+      </p>
+
+      <div class="welcome-btn-group" style="margin-top: 1rem;">
+        <button id="btn-restart" class="btn-cyber btn-cyber-green">RESTART TERMINAL</button>
+      </div>
+    </div>
+
+    <!-- Public Leaderboard -->
+    <div class="glass-panel" style="width: 100%; max-width: 980px; margin-bottom: 3rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.8rem;">
+        <h2 class="card-title title-glow" style="font-size: 1.4rem; text-align: left; margin-bottom: 0;">
+          🏆 EVENT LEADERBOARD RANKINGS
+        </h2>
+        <span style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--accent-cyan); letter-spacing: 0.5px;">↔ SCROLL TO VIEW ALL</span>
+      </div>
+      <div class="custom-table-container leaderboard-scroll-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Student Name</th>
+              <th>Enrollment</th>
+              <th>Set</th>
+              <th>Time</th>
+              <th>Solved</th>
+              <th>Passkeys</th>
+              <th>Score</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body">
+            <tr>
+              <td colspan="9" style="text-align: center; color: var(--text-dark);">Loading rankings...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const pcId = App.getPCId();
+      document.getElementById('pc-display').textContent = `TERMINAL: ${pcId}`;
+
+      const sessionId = App.getSessionId();
+      
+      const resStatusEl = document.getElementById('result-status');
+      const resTimeEl = document.getElementById('res-time');
+      const resSolvedEl = document.getElementById('res-solved');
+      const resPasskeysEl = document.getElementById('res-passkeys');
+      const resAttemptsEl = document.getElementById('res-attempts');
+      const resScoreEl = document.getElementById('res-score');
+      const resMessageEl = document.getElementById('res-message');
+      
+      // Fetch session result metrics
+      const loadResultMetrics = async () => {
+        if (!sessionId) {
+          resMessageEl.textContent = "No active session log detected. Terminal stands idle.";
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/game/${sessionId}`);
+          const data = await response.json();
+
+          if (data.success) {
+            const { session } = data;
+            
+            resSolvedEl.textContent = session.questionsSolved || 0;
+            resPasskeysEl.textContent = session.passkeysUsed || 0;
+            resAttemptsEl.textContent = session.totalAnswerAttempts || session.wrongChoices || 0;
+
+            // Fetch final result record for score
+            const resRecord = await fetch('/api/results/ranking');
+            const dataRecord = await resRecord.json();
+            if (dataRecord.success) {
+              const allResults = [...dataRecord.rankings, ...dataRecord.failed];
+              const match = allResults.find(r => r.sessionId === sessionId);
+              if (match) {
+                resScoreEl.textContent = match.score || 1000;
+              }
+            }
+
+            if (session.status === 'COMPLETED') {
+              resStatusEl.textContent = "✓ ACCESS GRANTED – ESCAPED";
+              resStatusEl.style.color = "var(--accent-green)";
+              resTimeEl.textContent = App.formatTime(session.completionTime);
+              resMessageEl.textContent = `Mission Accomplished, Agent ${session.student ? session.student.name : ''}! You solved the final vault protocols and escaped before terminal lockdown.`;
+            } else if (session.status === 'GAME_OVER') {
+              resStatusEl.textContent = "✗ TERMINAL LOCKED – TIME EXPIRED";
+              resStatusEl.style.color = "var(--accent-red)";
+              resTimeEl.textContent = "EXPIRED";
+              resMessageEl.textContent = `Countdown expired. The central firewall initiated lockdown. Terminal session has been sealed.`;
+            } else {
+              window.location.href = '/game.html';
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      // Fetch dynamic public leaderboard
+      const loadLeaderboard = async () => {
+        try {
+          const response = await fetch('/api/results/ranking');
+          const data = await response.json();
+
+          if (data.success) {
+            const leaderboardBody = document.getElementById('leaderboard-body');
+            leaderboardBody.innerHTML = '';
+
+            const allResults = [...(data.rankings || []), ...(data.failed || [])];
+
+            if (allResults.length === 0) {
+              leaderboardBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-dark);">No operations logged yet.</td></tr>`;
+              return;
+            }
+
+            allResults.forEach((r, index) => {
+              const row = document.createElement('tr');
+              const isWin = r.result === 'WIN';
+              
+              const minutes = Math.floor(r.completionTime / 60);
+              const seconds = r.completionTime % 60;
+              const formattedTime = isWin ? `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}` : 'EXPIRED';
+
+              const rankText = isWin ? `#${index + 1}` : 'N/A';
+              const badgeClass = isWin ? 'badge-green' : 'badge-red';
+
+              row.innerHTML = `
+                <td style="font-family: var(--font-mono); font-weight: bold; color: ${isWin ? 'var(--accent-cyan)' : 'var(--text-dark)'}">${rankText}</td>
+                <td>${escapeHtml(r.studentName)}</td>
+                <td style="font-family: var(--font-mono);">${escapeHtml(r.enrollmentNumber)}</td>
+                <td style="font-family: var(--font-mono); text-align: center;">${r.set}</td>
+                <td style="font-family: var(--font-mono); font-weight: bold;">${formattedTime}</td>
+                <td style="text-align: center; font-family: var(--font-mono); color: var(--accent-green);">${r.questionsSolved || 0}</td>
+                <td style="text-align: center; font-family: var(--font-mono); color: var(--accent-magenta);">${r.passkeysUsed || 0}</td>
+                <td style="text-align: center; font-family: var(--font-mono); font-weight: bold; color: var(--accent-cyan);">${r.score || 0}</td>
+                <td><span class="badge ${badgeClass}">${r.result}</span></td>
+              `;
+              leaderboardBody.appendChild(row);
+            });
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      const escapeHtml = (str) => {
+        if (!str) return '';
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      };
+
+      document.getElementById('btn-restart').addEventListener('click', () => {
+        App.clearSession();
+        window.location.href = '/index.html';
+      });
+
+      loadResultMetrics();
+      loadLeaderboard();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hack The Exit - Escape Console</title>
+  <link rel="stylesheet" href="/css/style.css?v=3.6">
+  <link rel="stylesheet" href="/css/game.css?v=3.6">
+</head>
+<body class="escape-game-body">
+
+  <!-- TOP HEADER HUD -->
+  <header class="cyber-top-header">
+    <div class="brand-block">
+      <h1 class="brand-logo">HACK THE <span>EXIT</span></h1>
+      <div class="brand-tagline">SOLVE &nbsp;»&nbsp; ANALYZE &nbsp;»&nbsp; ESCAPE</div>
+    </div>
+
+    <!-- Agent & Terminal Status Panel -->
+    <div class="agent-status-panel">
+      <div class="status-row">
+        <span class="status-label">AGENT:</span>
+        <span class="status-value cyan-glow" id="student-name">LOADING...</span>
+      </div>
+      <div class="status-divider"></div>
+      <div class="status-row">
+        <span class="status-label">TERMINAL:</span>
+        <span class="status-value cyan-glow" id="badge-terminal">PC-??</span>
+      </div>
+      <div class="status-divider"></div>
+      <div class="status-row">
+        <span class="status-label">SET:</span>
+        <span class="set-badge-pill" id="badge-set">A</span>
+      </div>
+      <span class="badge-tag vault-tag" id="badge-vault" style="display: none; margin-left: 0.5rem;">FINAL VAULT</span>
+    </div>
+
+    <!-- Neon Green Timer Box -->
+    <div class="neon-timer-box">
+      <div class="timer-clock-icon">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div class="timer-meta">
+        <span class="timer-meta-label">TIME REMAINING</span>
+        <span class="timer-meta-value" id="timer-display">00:00</span>
+      </div>
+    </div>
+
+    <!-- Cyber Motivational ASCII Block -->
+    <div class="cyber-motto-block">
+      <div>THINK ...</div>
+      <div>CODE</div>
+      <div>HACK</div>
+      <div>ESCAPE ...</div>
+    </div>
+  </header>
+
+  <!-- MAIN GAME WORKSPACE (Single Screen Viewport) -->
+  <main class="game-viewport-main">
+    <div class="game-content-wrapper" id="game-window">
+
+      <div id="alert-box" class="alert" style="display: none;"></div>
+
+      <!-- Trap Banner -->
+      <div class="trap-banner" id="trap-banner" style="display: none;">
+        ⚠️ SECURITY PROTOCOL TRAP ENGAGED – TERMINAL RESTRICTED ⚠️
+      </div>
+
+      <!-- NORMAL GAME SCREEN -->
+      <div id="normal-game-container" class="cyber-game-stage">
+
+        <!-- TOP SPLIT: Question + Code (Left) and Solution (Right) -->
+        <div class="game-stage-top-split">
+          
+          <!-- LEFT: CHALLENGE & CODE PANEL -->
+          <section class="challenge-panel-cyan" id="question-hero-card">
+            <div class="challenge-meta-row">
+              <div class="challenge-id-badge">
+                CHALLENGE : <span id="question-stage-header">QA-1</span>
+              </div>
+              <div class="challenge-category-pill" id="badge-category" style="display: none;">
+                C++ / OOP ARCHITECTURE
+              </div>
+            </div>
+
+            <h3 class="challenge-heading" id="question-title">STAGE 01: POLYMORPHIC DESTRUCTOR LIFECYCLE</h3>
+            <div class="challenge-narrative" id="question-prompt">
+              Analyze the memory allocation and destruction lifecycle of the polymorphic C++ class hierarchy.
+            </div>
+
+            <!-- Syntax / Terminal Code Block -->
+            <div class="code-terminal-box" id="code-container" style="display: none;">
+              <pre class="code-terminal-pre"><code id="code-snippet"></code></pre>
+            </div>
+
+            <!-- Optional Image -->
+            <div class="question-image-box" id="image-container" style="display: none;">
+              <img src="" alt="Stage Visual" id="question-img">
+            </div>
+          </section>
+
+          <!-- RIGHT: SOLUTION & PASSKEY PANEL (Magenta / Pink Theme) -->
+          <section class="solution-panel-pink" id="passkey-panel">
+            <div class="solution-header-row">
+              <span class="solution-lock-icon">🔒</span>
+              <h3 class="solution-title">YOUR SOLUTION</h3>
+            </div>
+
+            <!-- Toggle Tabs: Answer vs Direct Passkey -->
+            <div class="solution-tabs-row">
+              <button type="button" class="sol-tab-btn active" id="tab-answer">ANSWER</button>
+              <button type="button" class="sol-tab-btn" id="tab-passkey">DIRECT PASSKEY</button>
+            </div>
+
+            <p class="solution-instruction" id="solution-instruction-text">
+              Enter the output string OR use a direct passkey to bypass this challenge.
+            </p>
+
+            <form id="passkey-form" class="solution-input-form">
+              <div class="solution-input-wrapper">
+                <input type="text" id="passkey-input" class="solution-text-input" placeholder="Type your answer here..." autocomplete="off">
+              </div>
+
+              <button type="submit" class="btn-gradient-submit" id="btn-submit-passkey">
+                <span class="btn-icon">✈</span> SUBMIT / ADVANCE
+              </button>
+            </form>
+
+            <div class="solution-footer-quote">
+              — "Same code. Different perspective. That's where you escape." —
+            </div>
+          </section>
+
+        </div>
+
+        <!-- BOTTOM PANEL: 12 MIXED CLUES (Placed after Question and Code) -->
+        <section class="cyber-clues-section" id="clues-container-section">
+          <div class="clues-header-bar">
+            <div class="clues-title-group">
+              <div class="puzzle-icon-box">🧩</div>
+              <div>
+                <h2 class="clues-title">12 MIXED CLUES</h2>
+                <p class="clues-subtitle">Select any 6 clues to advance. Choose wisely — some clues may mislead you!</p>
+              </div>
+            </div>
+
+            <!-- Counter Pill Badge / Advance Trigger -->
+            <div class="clues-counter-group">
+              <button type="button" class="selected-counter-pill" id="btn-submit-clues">
+                SELECTED: <span id="clue-selected-count" class="counter-num">0</span> / 6
+              </button>
+            </div>
+          </div>
+
+          <!-- 3 Columns x 4 Rows Horizontal Clues Grid -->
+          <div class="clues-matrix-grid" id="clues-grid">
+            <!-- 12 Clues rendered dynamically -->
+          </div>
+        </section>
+
+      </div>
+
+      <!-- TRAP CHALLENGE MODE (Displayed only when trapped) -->
+      <div id="trap-game-container" style="display: none;">
+        <div class="challenge-panel-cyan" style="border-color: var(--accent-red); background: rgba(255, 0, 85, 0.05);">
+          <div class="challenge-meta-row">
+            <div class="challenge-id-badge" style="color: var(--accent-red);" id="trap-stage-header">SECURITY COUNTERMEASURE TRAP</div>
+          </div>
+          <h3 class="challenge-heading" id="trap-title" style="color: var(--accent-red);">TRAP ENCOUNTERED</h3>
+          <div class="challenge-narrative" id="trap-prompt" style="white-space: pre-line;">
+            A security trap has been sprung! Solve the disarm puzzle to escape.
+          </div>
+        </div>
+
+        <div class="solution-panel-pink" style="border-color: var(--accent-red); margin-top: 1rem;">
+          <div class="solution-header-row">
+            <h3 class="solution-title" style="color: var(--accent-red);">ENTER BYPASS DISARM CODE</h3>
+          </div>
+          <form id="trap-form" class="solution-input-form" style="margin-top: 0.8rem;">
+            <div class="solution-input-wrapper">
+              <input type="text" id="trap-input" class="solution-text-input" style="border-color: var(--accent-red); color: var(--accent-red);" placeholder="DISARM CODE" required autocomplete="off">
+            </div>
+            <button type="submit" class="btn-cyber btn-cyber-red" id="btn-submit-trap" style="margin-top: 0.6rem; width: 100%; padding: 0.7rem;">DISARM TRAP</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Expanded Clue Detail Modal -->
+  <div id="modal-clue" class="modal-overlay">
+    <div class="clue-modal-content">
+      <span class="modal-close" onclick="closeClueModal()">&times;</span>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="modal-clue-label" style="font-family: var(--font-mono); color: var(--accent-cyan); letter-spacing: 2px;">CLUE 01</h3>
+        <button id="modal-btn-mark" class="btn-cyber btn-cyber-cyan" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">MARK AS KEY</button>
+      </div>
+
+      <img id="modal-clue-img" class="clue-modal-img" src="" alt="Clue diagram" style="display: none;">
+
+      <div class="clue-modal-text" id="modal-clue-text">
+        Loading clue telemetry data...
+      </div>
+
+      <div>
+        <label style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dark); display: block; margin-bottom: 0.4rem;">AGENT SCRATCHPAD NOTES:</label>
+        <textarea id="modal-clue-notes" class="notes-area" rows="2" placeholder="Record your observations or deductions here..."></textarea>
+      </div>
+
+      <div style="margin-top: 1.2rem; text-align: right;">
+        <button class="btn-cyber btn-cyber-cyan" onclick="closeClueModal()">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup: Incorrect Clues Modal -->
+  <div id="modal-wrong-clues" class="modal-overlay">
+    <div class="clue-modal-content" style="border: 2px solid #ff0055; box-shadow: 0 0 40px rgba(255, 0, 85, 0.55); text-align: center; max-width: 500px; width: 92%; background: rgba(8, 12, 28, 0.97); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 14px; padding: 2.2rem 1.6rem; z-index: 100000;">
+      <div style="font-size: 3.2rem; line-height: 1; margin-bottom: 0.6rem;">⚠️</div>
+      <h3 style="font-family: 'Outfit', sans-serif; color: #ff0055; font-size: 1.45rem; font-weight: 800; margin: 0 0 0.8rem 0; letter-spacing: 1.5px; text-shadow: 0 0 16px rgba(255, 0, 85, 0.7);">
+        INCORRECT CLUES DETECTED!
+      </h3>
+      <p id="wrong-clues-popup-msg" style="color: #e2e8f0; font-size: 1rem; line-height: 1.6; margin: 0 0 1.6rem 0;">
+        One or more of your selected clues are <strong style="color: #ff3377;">false or misleading</strong>.<br>
+        <span style="color: #00f0ff; font-weight: 600; display: inline-block; margin-top: 0.5rem;">
+          You must identify and select all 6 TRUE clues to unlock the next challenge!
+        </span>
+      </p>
+      <div style="display: flex; gap: 0.8rem; justify-content: center;">
+        <button type="button" class="btn-gradient-submit" id="btn-close-wrong-clues" style="background: linear-gradient(90deg, #ff0055 0%, #ec4899 100%); max-width: 200px; padding: 0.75rem 1.5rem; font-size: 1rem; box-shadow: 0 0 25px rgba(255, 0, 85, 0.6); cursor: pointer; border-radius: 8px; border: none; color: #ffffff; letter-spacing: 1px;">
+          TRY AGAIN
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/game.js?v=4.1"></script>
+</body>
+</html>

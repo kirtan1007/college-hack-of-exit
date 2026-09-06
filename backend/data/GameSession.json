@@ -1,0 +1,169 @@
+[
+  {
+    "sessionId": "SESS-AF9ANPNDK",
+    "studentId": {
+      "name": "Kirtan Panchal",
+      "department": "B.Sc IT",
+      "enrollmentNumber": "24084130787788",
+      "semester": "Sem 1",
+      "whatsapp": "1023456987",
+      "email": "kirtanpanchal2006@gmail.com",
+      "createdAt": "2026-09-06T17:27:51.159Z",
+      "updatedAt": "2026-09-06T17:27:51.159Z",
+      "_id": "870d52p3v3rptyoow9"
+    },
+    "pcId": "PC-01",
+    "questionSet": "A",
+    "startTime": "2026-09-06T17:27:51.164Z",
+    "currentQuestion": "Q01",
+    "currentQuestionIndex": 0,
+    "questionSequence": [
+      "Q01",
+      "Q02",
+      "Q03"
+    ],
+    "status": "ACTIVE",
+    "allowedDuration": 1800,
+    "unlocked": true,
+    "createdAt": "2026-09-06T17:27:51.164Z",
+    "updatedAt": "2026-09-06T17:28:18.406Z",
+    "questionProgress": [
+      {
+        "questionId": "Q01",
+        "cluesViewed": [],
+        "selectedClueIds": [],
+        "shuffledClueIds": [
+          "Q01-G6",
+          "Q01-B3",
+          "Q01-B5",
+          "Q01-B6",
+          "Q01-B1",
+          "Q01-B2",
+          "Q01-G5",
+          "Q01-G3",
+          "Q01-G4",
+          "Q01-G1",
+          "Q01-G2",
+          "Q01-B4"
+        ],
+        "cluesSubmitted": false
+      }
+    ],
+    "_id": "ukw3abn6uf689el0p0"
+  },
+  {
+    "sessionId": "SESS-MMYW42HO8",
+    "studentId": {
+      "name": "TEJAS ASHOK BHAI PANCHAL",
+      "department": "BCA",
+      "enrollmentNumber": "98745895460",
+      "semester": "Sem 1",
+      "whatsapp": "9687885244",
+      "email": "23bca119@vtcbcsr.edu.in",
+      "createdAt": "2026-09-06T17:28:10.254Z",
+      "updatedAt": "2026-09-06T17:28:10.254Z",
+      "_id": "4sty52nf80j6x28vdy"
+    },
+    "pcId": "PC-02",
+    "questionSet": "B",
+    "startTime": "2026-09-06T17:28:10.259Z",
+    "currentQuestion": "Q01",
+    "currentQuestionIndex": 2,
+    "questionSequence": [
+      "Q02",
+      "Q03",
+      "Q01"
+    ],
+    "status": "ACTIVE",
+    "allowedDuration": 1800,
+    "unlocked": true,
+    "createdAt": "2026-09-06T17:28:10.260Z",
+    "updatedAt": "2026-09-06T17:30:08.311Z",
+    "questionProgress": [
+      {
+        "questionId": "Q02",
+        "cluesViewed": [],
+        "selectedClueIds": [
+          "Q02-G3",
+          "Q02-G6",
+          "Q02-G4",
+          "Q02-G5",
+          "Q02-G1",
+          "Q02-G2"
+        ],
+        "shuffledClueIds": [
+          "Q02-B4",
+          "Q02-B1",
+          "Q02-G3",
+          "Q02-G6",
+          "Q02-G4",
+          "Q02-B2",
+          "Q02-G5",
+          "Q02-G2",
+          "Q02-B5",
+          "Q02-G1",
+          "Q02-B3",
+          "Q02-B6"
+        ],
+        "cluesSubmitted": true,
+        "solvedAt": "2026-09-06T17:29:00.244Z",
+        "completedBy": "clues"
+      },
+      {
+        "questionId": "Q03",
+        "cluesViewed": [],
+        "selectedClueIds": [
+          "Q03-G4",
+          "Q03-G2",
+          "Q03-G3",
+          "Q03-G1",
+          "Q03-G5",
+          "Q03-G6"
+        ],
+        "shuffledClueIds": [
+          "Q03-G4",
+          "Q03-B2",
+          "Q03-G2",
+          "Q03-B4",
+          "Q03-B6",
+          "Q03-G3",
+          "Q03-B1",
+          "Q03-B5",
+          "Q03-G1",
+          "Q03-G5",
+          "Q03-B3",
+          "Q03-G6"
+        ],
+        "cluesSubmitted": true,
+        "wrongClueAttempts": 1,
+        "solvedAt": "2026-09-06T17:30:07.907Z",
+        "completedBy": "clues"
+      },
+      {
+        "questionId": "Q01",
+        "cluesViewed": [],
+        "selectedClueIds": [],
+        "shuffledClueIds": [
+          "Q01-G3",
+          "Q01-G4",
+          "Q01-G5",
+          "Q01-G2",
+          "Q01-B6",
+          "Q01-G6",
+          "Q01-B5",
+          "Q01-B1",
+          "Q01-B2",
+          "Q01-G1",
+          "Q01-B3",
+          "Q01-B4"
+        ],
+        "cluesSubmitted": false
+      }
+    ],
+    "passwordAttempts": 1,
+    "wrongChoices": 2,
+    "latestClueAttempt": null,
+    "questionsSolved": 2,
+    "_id": "qleda49oog0izusbef"
+  }
+]

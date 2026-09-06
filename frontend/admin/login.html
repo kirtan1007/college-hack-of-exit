@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Hack The Exit</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/registration.css">
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="brand">HACK THE<span> EXIT</span></div>
+    <a href="/" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-dark);">RETURN TERMINAL</a>
+  </header>
+
+  <main class="main-container">
+    <div class="glass-panel auth-card">
+      <h2 class="card-title title-glow">ADMIN ACCESS PORTAL</h2>
+
+      <div id="alert-box" class="alert"></div>
+
+      <form id="admin-login-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" class="form-control" placeholder="Admin username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="Admin password" required>
+        </div>
+
+        <div class="welcome-btn-group" style="margin-top: 2rem;">
+          <button type="submit" class="btn-cyber btn-cyber-red">AUTHORIZE SIGN-IN</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginForm = document.getElementById('admin-login-form');
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        App.hideAlert('alert-box');
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        try {
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Save token to localStorage in addition to httpOnly cookie (for dual validation compatibility)
+            localStorage.setItem('adminToken', data.token);
+            window.location.href = '/admin/dashboard.html';
+          } else {
+            App.showAlert('alert-box', data.message || 'Login failed.');
+          }
+        } catch (err) {
+          console.error(err);
+          App.showAlert('alert-box', 'Network authorization connection failed.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

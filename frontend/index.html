@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hack The Exit - Mystery / Escape Game</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/registration.css">
+</head>
+<body>
+  
+  <header class="top-nav">
+    <div class="brand">HACK THE<span> EXIT</span></div>
+    <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-dark);" id="pc-display">PC-ID: LOAD...</div>
+  </header>
+
+  <main class="main-container">
+    <div class="glass-panel auth-card">
+      <div class="welcome-hero">
+        <h1 class="welcome-title">HACK THE EXIT</h1>
+        <div class="welcome-subtitle">Can you find the way out?</div>
+      </div>
+
+      <div class="welcome-btn-group">
+        <button id="btn-start" class="btn-cyber btn-cyber-green">START GAME</button>
+        <button id="btn-rules" class="btn-cyber">HOW TO PLAY</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Rules Modal -->
+  <div id="rules-modal" class="modal-overlay">
+    <div class="modal-content">
+      <span id="close-rules" class="modal-close">&times;</span>
+      <h2 class="card-title title-glow">MISSION DIRECTIVES</h2>
+      <ul class="rules-list">
+        <li><strong>Identity Check</strong>: Enter your enrollment and student details to register your PC terminal with your assigned Question Set (A, B, or C).</li>
+        <li><strong>Decryption Entry Gate</strong>: Convert the displayed Octal security code into its 3-digit Binary equivalent within allowed attempts to unlock terminal access.</li>
+        <li><strong>10 Progressive Vaults</strong>: Navigate through 10 technical challenges (Q01 to Q10) to unlock the final escape door.</li>
+        <li><strong>Clue Investigation</strong>: Examine the scrambled clue grid. Identify the genuine clue to unlock each room, while avoiding deceptive decoys.</li>
+        <li><strong>Direct Passkeys</strong>: Discover hidden master passkeys to instantly bypass stages and accelerate your escape path.</li>
+        <li><strong>Penalty System</strong>: Traps are disabled. However, incorrect attempts and wrong passkeys will incur score penalties, so submit carefully.</li>
+        <li><strong>Race The Clock</strong>: Breach all vaults before the countdown timer hits zero. Winners are ranked on fastest completion time, passkeys used, and highest score.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    // Initialize welcome page
+    document.addEventListener('DOMContentLoaded', () => {
+      const pcId = App.getPCId();
+      document.getElementById('pc-display').textContent = `PC-ID: ${pcId}`;
+
+      // Start game redirection
+      document.getElementById('btn-start').addEventListener('click', () => {
+        window.location.href = `/registration.html?pcId=${encodeURIComponent(pcId)}`;
+      });
+
+      // Rules modal trigger
+      const rulesModal = document.getElementById('rules-modal');
+      document.getElementById('btn-rules').addEventListener('click', () => {
+        rulesModal.classList.add('active');
+      });
+      document.getElementById('close-rules').addEventListener('click', () => {
+        rulesModal.classList.remove('active');
+      });
+      rulesModal.addEventListener('click', (e) => {
+        if (e.target === rulesModal) {
+          rulesModal.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

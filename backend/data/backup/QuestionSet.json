@@ -1,0 +1,38 @@
+[
+  {
+    "name": "A",
+    "entryOctal": "11",
+    "entryBinaryPassword": "1001",
+    "startQuestionId": "QA-1",
+    "finalQuestionId": "QA-FINAL",
+    "difficulty": "medium",
+    "active": true,
+    "_id": "4vea98di0vlk3hrq4j",
+    "createdAt": "2026-09-04T20:08:55.889Z",
+    "updatedAt": "2026-09-04T20:08:55.889Z"
+  },
+  {
+    "name": "B",
+    "entryOctal": "15",
+    "entryBinaryPassword": "1101",
+    "startQuestionId": "QB-1",
+    "finalQuestionId": "QB-FINAL",
+    "difficulty": "medium",
+    "active": true,
+    "_id": "70hhr8sdsbeld6d5if",
+    "createdAt": "2026-09-04T20:08:55.889Z",
+    "updatedAt": "2026-09-04T20:08:55.889Z"
+  },
+  {
+    "name": "C",
+    "entryOctal": "17",
+    "entryBinaryPassword": "1111",
+    "startQuestionId": "QC-1",
+    "finalQuestionId": "QC-FINAL",
+    "difficulty": "medium",
+    "active": true,
+    "_id": "k0ih2x9bi4mnzf91f3",
+    "createdAt": "2026-09-04T20:08:55.889Z",
+    "updatedAt": "2026-09-04T20:08:55.889Z"
+  }
+]

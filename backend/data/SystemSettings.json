@@ -1,0 +1,33 @@
+[
+  {
+    "eventName": "Hack The Exit",
+    "eventDescription": "Analyze 12 mixed clues to decrypt the system, avoid traps, or use direct passkeys to escape.",
+    "defaultTimerMinutes": 30,
+    "maxPasswordAttempts": 3,
+    "enableHints": true,
+    "departments": [
+      "BCA",
+      "B.Sc IT",
+      "B.Tech CS",
+      "MCA",
+      "M.Sc IT",
+      "Other"
+    ],
+    "semesters": [
+      "Sem 1",
+      "Sem 2",
+      "Sem 3",
+      "Sem 4",
+      "Sem 5",
+      "Sem 6"
+    ],
+    "createdAt": "2026-09-04T20:08:55.886Z",
+    "updatedAt": "2026-09-06T17:11:08.248Z",
+    "activeQuestionIds": [
+      "Q01",
+      "Q02",
+      "Q03"
+    ],
+    "_id": "t8yi0m0sgrkrsk9r9v"
+  }
+]

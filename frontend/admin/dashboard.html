@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Center - Hack The Exit</title>
+  <link rel="stylesheet" href="/css/style.css?v=2.3">
+  <link rel="stylesheet" href="/css/admin.css?v=2.3">
+  <style>
+    /* Section toggling class */
+    .dashboard-section {
+      display: none;
+    }
+    .dashboard-section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <div>
+        <div class="sidebar-brand">HACK THE<span> CTRL</span></div>
+        <ul class="sidebar-menu">
+          <li class="sidebar-item active" data-target="section-dashboard"><a href="#">📊 Event Dashboard</a></li>
+          <li class="sidebar-item" data-target="section-active-questions"><a href="#">🎯 Contest Questions Config</a></li>
+          <li class="sidebar-item" data-target="section-pc"><a href="#">🖥️ PC Assignments</a></li>
+          <li class="sidebar-item" data-target="section-timer"><a href="#">⏱️ Timer Settings</a></li>
+          <li class="sidebar-item" data-target="section-sets"><a href="#">📂 Question Sets</a></li>
+          <li class="sidebar-item" data-target="section-questions"><a href="#">🛠️ Question Builder</a></li>
+          <li class="sidebar-item" data-target="section-students"><a href="#">🧑‍🎓 Student Registry</a></li>
+          <li class="sidebar-item" data-target="section-results"><a href="#">🏆 Winner Rankings</a></li>
+          <li class="sidebar-item" data-target="section-settings"><a href="#">⚙️ System Settings</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-footer">
+        <button id="btn-admin-logout" class="btn-cyber btn-cyber-red" style="width: 100%; padding: 0.6rem;">SECURE LOGOUT</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="admin-main">
+      <div id="dashboard-alert" class="alert"></div>
+
+      <!-- SECTION: DASHBOARD -->
+      <section id="section-dashboard" class="dashboard-section active">
+        <div class="admin-toolbar">
+          <h1 class="admin-header-title" style="margin-bottom: 0;">LIVE EVENT TELEMETRY</h1>
+          <div>
+            <button class="btn-cyber btn-cyber-red" id="btn-clear-telemetry">CLEAR ALL RESULTS</button>
+          </div>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card accent-cyan">
+            <span class="stat-label">Total Registered</span>
+            <span class="stat-value" id="stat-total-students">0</span>
+          </div>
+          <div class="stat-card accent-green">
+            <span class="stat-label">Active Operators</span>
+            <span class="stat-value" id="stat-active-games">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Escaped (WIN)</span>
+            <span class="stat-value" id="stat-completed-games" style="color: var(--accent-green);">0</span>
+          </div>
+          <div class="stat-card accent-red">
+            <span class="stat-label">System Lockdown</span>
+            <span class="stat-value" id="stat-gameover-games">0</span>
+          </div>
+          <div class="stat-card accent-cyan">
+            <span class="stat-label">Total Questions</span>
+            <span class="stat-value" id="stat-total-questions">0</span>
+          </div>
+          <div class="stat-card accent-green">
+            <span class="stat-label">Questions Solved</span>
+            <span class="stat-value" id="stat-questions-solved">0</span>
+          </div>
+          <div class="stat-card accent-magenta">
+            <span class="stat-label">Passkey Bypasses</span>
+            <span class="stat-value" id="stat-passkey-bypasses">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Fastest Escape</span>
+            <span class="stat-value" id="stat-fastest-time" style="color: var(--accent-green);">--:--</span>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;">
+          <h2 class="card-title title-glow" style="font-size: 1.5rem; text-align: left; margin: 0;">🎮 LIVE OPERATOR TERMINALS & HINT ASSISTANT</h2>
+          <span id="live-sync-indicator" style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 0.5rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 20px; padding: 0.35rem 0.9rem;">
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #00ff88; box-shadow: 0 0 10px #00ff88;"></span>
+            LIVE AUTO-SYNC (1s REAL-TIME)
+          </span>
+        </div>
+        <div class="custom-table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th style="width: 85px;">Terminal</th>
+                <th style="min-width: 140px;">Operator</th>
+                <th style="width: 65px; text-align: center;">Set</th>
+                <th style="min-width: 170px;">Active Challenge</th>
+                <th style="min-width: 140px;">Direct Passkey</th>
+                <th style="min-width: 270px;">Live Clue Telemetry (Sir Hint)</th>
+                <th style="width: 65px; text-align: center;">Solved</th>
+                <th style="width: 80px;">Timer</th>
+                <th style="width: 90px; text-align: center;">Status</th>
+                <th style="width: 115px; text-align: center;">Sir Intel</th>
+              </tr>
+            </thead>
+            <tbody id="live-sessions-body">
+              <tr>
+                <td colspan="10" style="text-align: center; color: var(--text-dark);">Monitoring active PC terminals...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION: CONTEST QUESTIONS & STAGES CONFIG -->
+      <section id="section-active-questions" class="dashboard-section">
+        <div class="admin-toolbar" style="flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="admin-header-title" style="margin-bottom: 0.3rem;">🎯 CONTEST QUESTIONS & STAGES CONFIG</h1>
+            <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary);">
+              Select which challenges will be played in this contest. All PCs receive the SAME selected questions in a shuffled/rotated order (e.g. PC-01 gets 1,2,3; PC-02 gets 2,3,1; PC-03 gets 3,1,2).
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="btn-cyber" id="btn-preset-3">🎯 FIRST 3 (QUICK)</button>
+            <button type="button" class="btn-cyber" id="btn-preset-5">⚡ FIRST 5</button>
+            <button type="button" class="btn-cyber" id="btn-preset-all">🌟 ALL 10</button>
+            <button type="button" class="btn-cyber btn-cyber-green" id="btn-save-active-questions">💾 SAVE CONTEST CONFIG</button>
+          </div>
+        </div>
+
+        <div class="glass-panel" style="margin-bottom: 1.5rem; border: 1px solid rgba(0, 240, 255, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <span style="font-family: var(--font-heading); color: #f8fafc; font-size: 1.05rem; font-weight: 700;">ACTIVE CONTEST ROUND:</span>
+              <span id="active-questions-summary" style="margin-left: 0.8rem; font-family: var(--font-mono); font-weight: 800; color: #00ff88; font-size: 1.05rem;">
+                Loading configuration...
+              </span>
+            </div>
+            <div style="font-size: 0.82rem; color: #38bdf8;">
+              💡 <em>When students finish the selected stages, they immediately WIN the escape room!</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="custom-table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th style="width: 70px; text-align: center;">Active</th>
+                <th style="width: 110px;">Question ID</th>
+                <th>Challenge Title</th>
+                <th style="min-width: 150px;">Direct Passkey</th>
+                <th style="min-width: 150px;">Answer Key</th>
+                <th>Prompt Preview</th>
+              </tr>
+            </thead>
+            <tbody id="active-questions-table-body">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-dark);">Loading questions...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION: PC ASSIGNMENT -->
+      <section id="section-pc" class="dashboard-section">
+        <h1 class="admin-header-title">PC IDENTIFICATION ASSIGNMENTS</h1>
+        
+        <div class="glass-panel" style="margin-bottom: 2rem;">
+          <h3 style="margin-bottom: 1rem;">Map Lab Terminals to Question Sets</h3>
+          <form id="pc-assignment-form" class="form-grid">
+            <div class="form-group">
+              <label for="assign-pc-id">PC Terminal Identifier</label>
+              <input type="text" id="assign-pc-id" class="form-control" placeholder="e.g. PC-01" required>
+            </div>
+            <div class="form-group">
+              <label for="assign-set">Assigned Question Set</label>
+              <select id="assign-set" class="form-control">
+                <option value="A">Set A</option>
+                <option value="B">Set B</option>
+                <option value="C">Set C</option>
+              </select>
+            </div>
+            <div style="grid-column: 1 / -1; text-align: right;">
+              <button type="submit" class="btn-cyber btn-cyber-green">SAVE TERMINAL CONFIG</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="pc-grid" id="pc-assignment-grid">
+          <!-- Loaded dynamically -->
+        </div>
+      </section>
+
+      <!-- SECTION: TIMER SETTINGS -->
+      <section id="section-timer" class="dashboard-section">
+        <h1 class="admin-header-title">TIMER SYSTEM CONFIGURATION</h1>
+        
+        <div class="glass-panel" style="max-width: 500px; margin: 0 auto;">
+          <h2 class="card-title title-glow" style="font-size: 1.5rem;">Master Event Countdown Limit</h2>
+          <form id="timer-settings-form">
+            <div class="form-group" style="text-align: center;">
+              <label for="timer-minutes" style="font-size: 1rem; margin-bottom: 1rem;">Default Game Timer (Minutes)</label>
+              <input type="number" id="timer-minutes" class="form-control" style="font-family: var(--font-mono); font-size: 2.5rem; text-align: center; max-width: 180px; margin: 0 auto;" min="1" max="180" required>
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+              <button type="submit" class="btn-cyber btn-cyber-green">COMMIT TIMER VALUE</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- SECTION: QUESTION SETS -->
+      <section id="section-sets" class="dashboard-section">
+        <div class="admin-toolbar">
+          <h1 class="admin-header-title" style="margin-bottom: 0;">QUESTION SET PANELS</h1>
+          <button class="btn-cyber btn-cyber-green" id="btn-add-set">ADD NEW SET</button>
+        </div>
+
+        <div class="custom-table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Set Name</th>
+                <th>Entry Octal</th>
+                <th>Binary Password</th>
+                <th>Start ID</th>
+                <th>Final ID</th>
+                <th>Difficulty</th>
+                <th>Active</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="sets-table-body">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION: QUESTION BUILDER & CRUD -->
+      <section id="section-questions" class="dashboard-section">
+        <div class="admin-toolbar">
+          <div>
+            <h1 class="admin-header-title" style="margin-bottom: 0.3rem;">QUESTION BUILDER</h1>
+            <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary);">
+              Each challenge requires: 1 Question Prompt + 6 Good Clues + 6 Bad Clues + 1 Direct Passkey
+            </div>
+          </div>
+          <button class="btn-cyber btn-cyber-green" id="btn-add-question">+ CREATE QUESTION</button>
+        </div>
+
+        <div class="custom-table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Question ID</th>
+                <th>Set</th>
+                <th>Good Clues</th>
+                <th>Bad Clues</th>
+                <th>Passkey</th>
+                <th>Final Vault</th>
+                <th>Next Route</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="questions-table-body">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION: STUDENTS LIST -->
+      <section id="section-students" class="dashboard-section">
+        <div class="admin-toolbar">
+          <h1 class="admin-header-title" style="margin-bottom: 0;">STUDENT REGISTRY</h1>
+          <button class="btn-cyber btn-cyber-cyan" id="btn-export-students-csv">EXPORT STUDENTS CSV</button>
+        </div>
+        <div class="custom-table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Enrollment</th>
+                <th>Department</th>
+                <th>Semester</th>
+                <th>WhatsApp</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-table-body">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION: WINNER RANKINGS -->
+      <section id="section-results" class="dashboard-section">
+        <div class="admin-toolbar">
+          <h1 class="admin-header-title" style="margin-bottom: 0;">RESULTS & LEADERBOARD</h1>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-cyber btn-cyber-red" id="btn-clear-results">CLEAR ALL RESULTS</button>
+            <button class="btn-cyber btn-cyber-cyan" id="btn-export-csv">EXPORT RESULTS CSV</button>
+          </div>
+        </div>
+
+        <div class="custom-table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Student</th>
+                <th>Enrollment</th>
+                <th>PC</th>
+                <th>Set</th>
+                <th>Time</th>
+                <th>Solved</th>
+                <th>Passkeys</th>
+                <th>Attempts</th>
+                <th>Score</th>
+                <th>Result</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="results-table-body">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION: SETTINGS -->
+      <section id="section-settings" class="dashboard-section">
+        <h1 class="admin-header-title">SYSTEM SETTINGS</h1>
+        <div class="glass-panel">
+          <form id="system-settings-form">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="settings-event-name">Event Name</label>
+                <input type="text" id="settings-event-name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="settings-max-attempts">Max Password Attempts (Entry Gate)</label>
+                <input type="number" id="settings-max-attempts" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="settings-event-desc">Event Description</label>
+              <textarea id="settings-event-desc" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="settings-departments">Departments (Comma-separated)</label>
+              <input type="text" id="settings-departments" class="form-control" placeholder="e.g. BCA, M.Sc(IT), IT, B.Tech, Other" required>
+            </div>
+            <div style="text-align: right; margin-top: 2rem;">
+              <button type="submit" class="btn-cyber btn-cyber-green">COMMIT SETTINGS</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ==========================================
+       MODALS FOR CRUD CREATION & EDITS
+       ========================================== -->
+
+  <!-- MODAL: Question Set Form -->
+  <div id="modal-set" class="modal-overlay">
+    <div class="modal-content admin-modal">
+      <span class="modal-close" onclick="closeModal('modal-set')">&times;</span>
+      <h2 class="card-title title-glow" id="set-modal-title">CONFIGURE QUESTION SET</h2>
+      <form id="form-set">
+        <input type="hidden" id="set-id">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="set-name">Set Identifier (A/B/C)</label>
+            <select id="set-name" class="form-control" required>
+              <option value="A">Set A</option>
+              <option value="B">Set B</option>
+              <option value="C">Set C</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="set-difficulty">Difficulty Rating</label>
+            <select id="set-difficulty" class="form-control">
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="set-entry-octal">Entry Challenge Octal Number</label>
+            <input type="text" id="set-entry-octal" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="set-entry-binary">Entry Binary Password</label>
+            <input type="text" id="set-entry-binary" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="set-start-id">Start Question ID</label>
+            <input type="text" id="set-start-id" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="set-final-id">Final Question ID</label>
+            <input type="text" id="set-final-id" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="set-active">Active Set status</label>
+          <select id="set-active" class="form-control">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cyber" onclick="closeModal('modal-set')">CANCEL</button>
+          <button type="submit" class="btn-cyber btn-cyber-green">SAVE CONFIG</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Question Builder Form (1 Question + 6 Good + 6 Bad + Passkey) -->
+  <div id="modal-question" class="modal-overlay">
+    <div class="modal-content admin-modal admin-modal-large">
+      <span class="modal-close" onclick="closeModal('modal-question')">&times;</span>
+      <h2 class="card-title title-glow" id="question-modal-title">QUESTION BUILDER</h2>
+      
+      <form id="form-question" enctype="multipart/form-data">
+        <input type="hidden" id="question-id-field"> <!-- DB _id -->
+        
+        <!-- SECTION 1: QUESTION CORE DETAILS -->
+        <h3 style="font-family: var(--font-heading); color: var(--accent-cyan); margin-top: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          1. QUESTION DETAILS
+        </h3>
+        
+        <div class="form-grid-3" style="margin-top: 1rem;">
+          <div class="form-group">
+            <label for="q-question-id">Question ID (e.g. QA-1)</label>
+            <input type="text" id="q-question-id" class="form-control" placeholder="QA-1" required>
+          </div>
+          <div class="form-group">
+            <label for="q-set">Assigned Set</label>
+            <select id="q-set" class="form-control" required>
+              <option value="ALL">Set ALL (Universal)</option>
+              <option value="A">Set A</option>
+              <option value="B">Set B</option>
+              <option value="C">Set C</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="q-difficulty">Difficulty Rating</label>
+            <select id="q-difficulty" class="form-control">
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="q-title">Question Title</label>
+            <input type="text" id="q-title" class="form-control" placeholder="e.g. STAGE 01: SERVER CORRIDOR CIPHER" required>
+          </div>
+          <div class="form-group">
+            <label for="q-category">Category / Tech Domain</label>
+            <input type="text" id="q-category" class="form-control" placeholder="e.g. C++, Python, SQL, Algorithms, Cyber Security">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="q-prompt">Question Narrative / Prompt</label>
+          <textarea id="q-prompt" class="form-control" rows="3" placeholder="Enter the mission description for this puzzle..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="q-code">Challenge Code Snippet (Python, C, C++, Java, SQL, etc.)</label>
+          <textarea id="q-code" class="form-control" rows="5" placeholder="Enter code snippet here..." style="font-family: 'Courier New', Consolas, Monaco, monospace; font-size: 0.85rem; color: #38bdf8; background: #020617;"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="q-image">Main Puzzle Image Visual (Optional)</label>
+          <input type="file" id="q-image" class="form-control" accept="image/*">
+          <input type="hidden" id="q-image-url">
+          <div id="q-image-preview" style="margin-top: 0.5rem; display: none;">
+            <img id="q-image-preview-img" src="" style="max-height: 80px; border-radius: 4px; border: 1px solid var(--border-color);">
+          </div>
+        </div>
+
+        <!-- SECTION 2: 6 GOOD CLUES -->
+        <div class="clues-builder-container good-group">
+          <div class="clue-group-header">
+            <span class="clue-group-title" style="color: var(--accent-green);">🟢 6 GOOD CLUES (USEFUL SIGNALS)</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dark);">Exactly 6 required</span>
+          </div>
+          
+          <div id="good-clues-builder-list">
+            <!-- 6 Good Clue rows generated dynamically -->
+          </div>
+        </div>
+
+        <!-- SECTION 3: 6 BAD CLUES -->
+        <div class="clues-builder-container bad-group">
+          <div class="clue-group-header">
+            <span class="clue-group-title" style="color: var(--accent-magenta);">🔴 6 BAD CLUES (DECEPTIVE SIGNALS)</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dark);">Exactly 6 required</span>
+          </div>
+          
+          <div id="bad-clues-builder-list">
+            <!-- 6 Bad Clue rows generated dynamically -->
+          </div>
+        </div>
+
+        <!-- SECTION 4: ANSWER & PASSKEY -->
+        <h3 style="font-family: var(--font-heading); color: var(--accent-cyan); margin-top: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          2. ANSWER & PASSKEY CONFIGURATION
+        </h3>
+
+        <div class="form-grid-3" style="margin-top: 1rem;">
+          <div class="form-group">
+            <label for="q-answer-key">Correct Answer Key</label>
+            <input type="text" id="q-answer-key" class="form-control" placeholder="e.g. OVERCLOCK" required>
+            <small style="color: var(--text-dark); font-size: 0.75rem;">Submitted after clue analysis</small>
+          </div>
+          <div class="form-group">
+            <label for="q-direct-passkey">Direct Passkey (Bypass Key)</label>
+            <input type="text" id="q-direct-passkey" class="form-control" placeholder="e.g. ALPHA99" required>
+            <small style="color: var(--text-dark); font-size: 0.75rem;">Direct bypass for speedrunners</small>
+          </div>
+          <div class="form-group">
+            <label for="q-wrong-passkey-action">On Wrong Passkey</label>
+            <select id="q-wrong-passkey-action" class="form-control">
+              <option value="penalty">Time Penalty (-60s)</option>
+              <option value="retry">Retry</option>
+              <option value="lockout">Lockout</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- SECTION 5: BRANCHING & VAULT CONFIG -->
+        <h3 style="font-family: var(--font-heading); color: var(--accent-cyan); margin-top: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          3. BRANCHING & ESCAPE ROUTE
+        </h3>
+
+        <div class="form-grid-3" style="margin-top: 1rem;">
+          <div class="form-group">
+            <label for="q-next-correct">Next Q-ID on Correct (or WIN)</label>
+            <input type="text" id="q-next-correct" class="form-control" placeholder="QA-2 or WIN">
+          </div>
+          <div class="form-group">
+            <label for="q-next-passkey">Next Q-ID on Passkey (or WIN)</label>
+            <input type="text" id="q-next-passkey" class="form-control" placeholder="QA-2 or WIN">
+          </div>
+          <div class="form-group">
+            <label for="q-wrong-action">On Wrong Answer Action</label>
+            <select id="q-wrong-action" class="form-control">
+              <option value="retry">Retry (Stay on question)</option>
+              <option value="penalty">Time Penalty (-60s)</option>
+              <option value="alternate">Route Alternate Branch</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 0.5rem;">
+          <label for="q-next-wrong">Alternate Q-ID (If Action is Alternate Route)</label>
+          <input type="text" id="q-next-wrong" class="form-control" placeholder="e.g. Q02-ALT">
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem; padding: 1rem; background: rgba(0, 255, 102, 0.05); border: 1px solid var(--accent-green); border-radius: 8px;">
+          <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer; color: var(--accent-green); font-family: var(--font-heading);">
+            <input type="checkbox" id="q-is-final" style="width: 18px; height: 18px; accent-color: var(--accent-green);">
+            <span>FINAL VAULT QUESTION (Escape Door - Solving Triggers Victory)</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cyber" onclick="closeModal('modal-question')">CANCEL</button>
+          <button type="submit" class="btn-cyber btn-cyber-green">PUBLISH QUESTION</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Question Preview (Matches Student View + Admin Good/Bad Toggle) -->
+  <div id="modal-preview" class="modal-overlay">
+    <div class="modal-content admin-modal admin-modal-large">
+      <span class="modal-close" onclick="closeModal('modal-preview')">&times;</span>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.8rem;">
+        <div>
+          <h2 class="card-title title-glow" style="margin: 0;">QUESTION PREVIEW</h2>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dark);">Simulates student terminal perspective</span>
+        </div>
+        <button id="btn-toggle-preview-labels" class="btn-cyber btn-cyber-cyan" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">
+          TOGGLE GOOD / BAD LABELS
+        </button>
+      </div>
+
+      <!-- Preview Header -->
+      <div class="question-hero-card" id="preview-hero-card" style="margin-bottom: 1.5rem;">
+        <div class="question-prompt-header" id="preview-q-id">CHALLENGE: QA-1 [SET A]</div>
+        <h2 class="question-title" id="preview-q-title">TITLE</h2>
+        <div class="question-narrative" id="preview-q-prompt">Prompt text...</div>
+        <pre class="question-code-block" id="preview-q-code" style="display: none; font-family: 'Courier New', monospace; background: #050b14; color: #38bdf8; padding: 1rem; border-radius: 6px; border: 1px solid #1e293b; margin-top: 1rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.4; white-space: pre-wrap;"></pre>
+      </div>
+
+      <!-- Preview 12 Clues Grid -->
+      <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 0.8rem;">
+        ⚡ 12 MIXED CLUES (SHUFFLED FOR STUDENT)
+      </div>
+      <div class="clues-grid" id="preview-clues-grid" style="margin-bottom: 2rem;">
+        <!-- Loaded dynamically -->
+      </div>
+
+      <!-- Interactive Preview Answer & Passkey Testing Panel -->
+      <div class="solution-panel test-preview-panel">
+        <div class="test-preview-header-row">
+          <div class="solution-panel-title test-preview-title">
+            TEST SOLUTION & PASSKEY VERIFICATION
+          </div>
+          <div class="test-preview-subtitle">
+            Interactive Admin Testing Simulation
+          </div>
+        </div>
+
+        <!-- Feedback Alert Box -->
+        <div id="preview-feedback-box" class="test-feedback-alert" style="display: none;"></div>
+
+        <!-- Testing Rows Container -->
+        <div class="test-panel-stack">
+          <!-- Answer Key Testing -->
+          <div class="test-row-box">
+            <div class="test-row-header">
+              <label for="preview-solution-input" class="test-label">1. ENTER SOLUTION</label>
+              <button type="button" id="preview-hint-answer" class="hint-badge badge-green" title="Click to auto-fill">Key: --</button>
+            </div>
+            <div class="test-input-group">
+              <input type="text" id="preview-solution-input" class="test-control-input" placeholder="Enter solution key...">
+              <button type="button" id="btn-preview-verify-answer" class="btn-test-action btn-test-green">VERIFY ANSWER</button>
+            </div>
+          </div>
+
+          <!-- Passkey Testing -->
+          <div class="test-row-box">
+            <div class="test-row-header">
+              <label for="preview-passkey-input" class="test-label">2. ALREADY KNOW THE ANSWER? (DIRECT PASSKEY)</label>
+              <button type="button" id="preview-hint-passkey" class="hint-badge badge-cyan" title="Click to auto-fill">Passkey: --</button>
+            </div>
+            <div class="test-input-group">
+              <input type="text" id="preview-passkey-input" class="test-control-input" placeholder="Enter direct passkey...">
+              <button type="button" id="btn-preview-use-passkey" class="btn-test-action btn-test-cyan">USE PASSKEY</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button class="btn-cyber" onclick="closeModal('modal-preview')">CLOSE PREVIEW</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PC Live Question Intel, 6 Good Clues & Passkey Guide -->
+  <div id="modal-pc-intel" class="modal-overlay">
+    <div class="modal-content admin-modal admin-modal-large" style="max-width: 950px;">
+      <span class="modal-close" onclick="closeModal('modal-pc-intel')">&times;</span>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.8rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.8rem;">
+            <span id="intel-pc-badge" class="badge badge-cyan" style="font-size: 1.1rem; padding: 0.35rem 0.9rem; font-weight: 800;">PC-01</span>
+            <h2 class="card-title title-glow" style="margin: 0; font-size: 1.35rem;">LIVE PC INTEL & SIR'S HINT GUIDE</h2>
+          </div>
+          <div id="intel-operator-meta" style="font-family: var(--font-mono); font-size: 0.85rem; color: #94a3b8; margin-top: 0.4rem;">
+            Operator: Loading...
+          </div>
+        </div>
+        <div id="intel-status-container" style="display: flex; gap: 0.6rem; align-items: center;">
+          <!-- Timer and Status badge -->
+        </div>
+      </div>
+
+      <!-- Live Clue Attempt Alert Box -->
+      <div id="intel-attempt-banner" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; background: rgba(15, 23, 42, 0.7); border: 1px solid #334155;">
+        <!-- Live attempt breakdown -->
+      </div>
+
+      <!-- PC Assigned Question Roadmap -->
+      <div id="intel-sequence-box" style="margin-bottom: 1.5rem; padding: 0.9rem 1.1rem; border-radius: 8px; background: rgba(15, 23, 42, 0.85); border: 1px solid #334155;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+          <span style="font-family: var(--font-heading); font-size: 0.85rem; color: #94a3b8; font-weight: 700;">
+            🗺️ OPERATOR'S CONTEST ROADMAP (PER-PC SHUFFLED STAGES):
+          </span>
+          <span id="intel-sequence-progress" style="font-family: var(--font-mono); font-size: 0.82rem; color: #38bdf8; font-weight: 800;">
+            Stage 1 / 3
+          </span>
+        </div>
+        <div id="intel-sequence-pills" style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+
+      <!-- Active Question Hero -->
+      <div class="question-hero-card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div class="question-prompt-header" id="intel-q-id" style="color: #38bdf8; font-weight: 800;">CHALLENGE: --</div>
+          <div id="intel-q-category" class="badge badge-purple">CATEGORY</div>
+        </div>
+        <h2 class="question-title" id="intel-q-title" style="color: #f8fafc; font-size: 1.3rem; margin-bottom: 0.6rem;">Question Title</h2>
+        <div class="question-narrative" id="intel-q-prompt" style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">Prompt text...</div>
+        <pre class="question-code-block" id="intel-q-code" style="display: none; font-family: 'Courier New', monospace; background: #050b14; color: #38bdf8; padding: 1rem; border-radius: 6px; border: 1px solid #1e293b; margin-top: 1rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.4; white-space: pre-wrap;"></pre>
+      </div>
+
+      <!-- Quick Bypass Passkey & Answer Callout -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: rgba(0, 240, 255, 0.08); border: 1.5px solid rgba(0, 240, 255, 0.4); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <span style="font-family: var(--font-heading); font-size: 0.8rem; color: #38bdf8; letter-spacing: 0.05em; font-weight: 700;">🔑 DIRECT BYPASS PASSKEY (ADMIN OVERRIDE)</span>
+            <div id="intel-passkey-val" style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 900; color: #00f0ff; margin-top: 0.4rem; word-break: break-all;">--</div>
+          </div>
+          <button type="button" id="btn-copy-passkey" class="btn-cyber btn-cyber-cyan" style="margin-top: 0.8rem; font-size: 0.75rem; padding: 0.35rem 0.8rem; align-self: flex-start;">
+            📋 COPY PASSKEY
+          </button>
+        </div>
+        <div style="background: rgba(0, 255, 102, 0.08); border: 1.5px solid rgba(0, 255, 102, 0.4); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <span style="font-family: var(--font-heading); font-size: 0.8rem; color: #4ade80; letter-spacing: 0.05em; font-weight: 700;">💡 STAGE SOLUTION ANSWER KEY</span>
+            <div id="intel-answer-val" style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 900; color: #00ff66; margin-top: 0.4rem; word-break: break-all;">--</div>
+          </div>
+          <button type="button" id="btn-copy-answer" class="btn-cyber btn-cyber-green" style="margin-top: 0.8rem; font-size: 0.75rem; padding: 0.35rem 0.8rem; align-self: flex-start;">
+            📋 COPY ANSWER
+          </button>
+        </div>
+      </div>
+
+      <!-- 6 GOOD CLUES (TRUE STATEMENTS) -->
+      <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="font-family: var(--font-heading); font-size: 1rem; color: #00ff88; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+            <span>✅ THE 6 GOOD CLUES (TRUE SOLUTIONS)</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 4px; padding: 0.15rem 0.5rem; color: #a7f3d0;">
+              Operator must pick these 6 to advance
+            </span>
+          </div>
+        </div>
+        <div id="intel-good-clues-list" style="display: grid; grid-template-columns: 1fr; gap: 0.6rem;">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+
+      <!-- 6 MISLEADING CLUES (TRAPS / FALSE) -->
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-family: var(--font-heading); font-size: 0.95rem; color: #f43f5e; font-weight: 800; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>❌ THE 6 MISLEADING CLUES (FALSE / TRAPS)</span>
+          <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 4px; padding: 0.15rem 0.5rem; color: #fecdd3;">
+            Triggers selection reset on student terminal
+          </span>
+        </div>
+        <div id="intel-bad-clues-list" style="display: grid; grid-template-columns: 1fr; gap: 0.6rem;">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button class="btn-cyber" onclick="closeModal('modal-pc-intel')">CLOSE INTEL</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js?v=5.0"></script>
+  <script src="/js/admin.js?v=5.0"></script>
+</body>
+</html>

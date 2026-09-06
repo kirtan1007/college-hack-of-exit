@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Kirtan Panchal",
+    "department": "B.Sc IT",
+    "enrollmentNumber": "24084130787788",
+    "semester": "Sem 1",
+    "whatsapp": "1023456987",
+    "email": "kirtanpanchal2006@gmail.com",
+    "createdAt": "2026-09-06T17:27:51.159Z",
+    "updatedAt": "2026-09-06T17:27:51.159Z",
+    "_id": "870d52p3v3rptyoow9"
+  },
+  {
+    "name": "TEJAS ASHOK BHAI PANCHAL",
+    "department": "BCA",
+    "enrollmentNumber": "98745895460",
+    "semester": "Sem 1",
+    "whatsapp": "9687885244",
+    "email": "23bca119@vtcbcsr.edu.in",
+    "createdAt": "2026-09-06T17:28:10.254Z",
+    "updatedAt": "2026-09-06T17:28:10.254Z",
+    "_id": "4sty52nf80j6x28vdy"
+  }
+]
