@@ -407,3 +407,38 @@ const questionSets = [
 ];
 fs.writeFileSync(qsPath, JSON.stringify(questionSets, null, 2), 'utf8');
 console.log(`[SUCCESS] Updated ${questionSets.length} question sets to start with Q01 and end at Q10.`);
+
+// Seed into MongoDB if available
+const mongoose = require('mongoose');
+require('dotenv').config();
+const Question = require('./backend/models/Question');
+const QuestionSet = require('./backend/models/QuestionSet');
+
+async function seedMongo() {
+  try {
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/hack-the-exit';
+    console.log(`Connecting to MongoDB at ${mongoUri}...`);
+    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 3000 });
+    console.log('Connected to MongoDB.');
+
+    await Question.deleteMany({});
+    const mongoQuestions = questions.map(q => {
+      const copy = { ...q };
+      delete copy._id; // Let Mongoose generate valid ObjectId
+      return copy;
+    });
+    await Question.insertMany(mongoQuestions);
+    console.log(`[SUCCESS] Seeded ${mongoQuestions.length} PDF questions into MongoDB!`);
+
+    await QuestionSet.deleteMany({});
+    await QuestionSet.insertMany(questionSets);
+    console.log(`[SUCCESS] Seeded ${questionSets.length} Question Sets into MongoDB!`);
+
+    process.exit(0);
+  } catch (err) {
+    console.warn(`[WARN] MongoDB seeding skipped: ${err.message}`);
+    process.exit(0);
+  }
+}
+
+seedMongo();

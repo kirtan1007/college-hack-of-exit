@@ -1,7 +1,7 @@
 [
   {
     "eventName": "Hack The Exit",
-    "eventDescription": "Analyze 12 mixed clues to decrypt the system, avoid traps, or use direct passkeys to escape.",
+    "eventDescription": "Event Date: 9 September 2026, Time: 3:00 PM, Room: D-102. Analyze clues, solve technical escape vaults, or use direct passkeys to escape.",
     "defaultTimerMinutes": 30,
     "maxPasswordAttempts": 3,
     "enableHints": true,
@@ -25,8 +25,7 @@
     "updatedAt": "2026-09-06T17:11:08.248Z",
     "activeQuestionIds": [
       "Q01",
-      "Q02",
-      "Q03"
+      "Q02"
     ],
     "_id": "t8yi0m0sgrkrsk9r9v"
   }

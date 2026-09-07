@@ -15,24 +15,24 @@
   },
   {
     "pcId": "PC-03",
-    "assignedSet": "C",
+    "assignedSet": "A",
     "_id": "o20mici57pa3c77xwk",
     "createdAt": "2026-09-04T20:08:55.888Z",
     "updatedAt": "2026-09-04T20:08:55.888Z"
   },
   {
-    "pcId": "PC-05",
-    "assignedSet": "B",
-    "createdAt": "2026-09-06T14:20:46.136Z",
-    "updatedAt": "2026-09-06T14:20:46.136Z",
-    "_id": "w5a9i32z3800xxsuro"
-  },
-  {
     "pcId": "PC-04",
-    "assignedSet": "A",
+    "assignedSet": "B",
     "createdAt": "2026-09-06T16:47:59.093Z",
     "updatedAt": "2026-09-06T16:47:59.093Z",
     "_id": "f7cvlhh5w5om6bwo4e"
+  },
+  {
+    "pcId": "PC-05",
+    "assignedSet": "A",
+    "createdAt": "2026-09-06T14:20:46.136Z",
+    "updatedAt": "2026-09-06T14:20:46.136Z",
+    "_id": "w5a9i32z3800xxsuro"
   },
   {
     "pcId": "PC-08",

@@ -9,7 +9,7 @@ const studentSchema = new mongoose.Schema({
   department: {
     type: String,
     required: true,
-    enum: ['BCA', 'B.Sc IT', 'B.Tech', 'MCA', 'Other']
+    trim: true
   },
   enrollmentNumber: {
     type: String,

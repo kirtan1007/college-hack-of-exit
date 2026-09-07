@@ -22,8 +22,11 @@ const protectAdmin = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecretjwtkeyforhacktheexit');
     req.admin = await AdminUser.findById(decoded.id).select('-password');
+    if (!req.admin && decoded.username) {
+      req.admin = await AdminUser.findOne({ username: decoded.username }).select('-password');
+    }
     if (!req.admin) {
-      return res.status(401).json({ success: false, message: 'Admin user not found' });
+      return res.status(401).json({ success: false, message: 'Admin user not found. Please log in again.' });
     }
     next();
   } catch (error) {

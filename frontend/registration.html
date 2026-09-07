@@ -16,8 +16,19 @@
 
   <main class="main-container">
     <div class="glass-panel auth-card">
-      <h2 class="card-title title-glow">AGENT REGISTRATION</h2>
+      <h2 class="card-title title-glow" style="margin-bottom: 0.5rem;">AGENT REGISTRATION</h2>
       
+      <!-- Event Schedule & Room Badge -->
+      <div style="text-align: center; margin-bottom: 1.2rem;">
+        <span style="display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; flex-wrap: wrap; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 20px; padding: 0.35rem 1rem; font-family: var(--font-mono); font-size: 0.8rem; color: #38bdf8;">
+          <span>📅 <strong>9 September 2026</strong></span>
+          <span>•</span>
+          <span style="color: #00ff88;">⏰ <strong>3:00 PM</strong></span>
+          <span>•</span>
+          <span style="color: #facc15;">📍 <strong>ROOM: D-102</strong></span>
+        </span>
+      </div>
+
       <div id="alert-box" class="alert"></div>
 
       <form id="registration-form">
@@ -64,6 +75,11 @@
 
         <div class="welcome-btn-group" style="margin-top: 2rem;">
           <button type="submit" class="btn-cyber btn-cyber-green">AUTHENTICATE & ENTER</button>
+        </div>
+        <div style="text-align: center; margin-top: 1.2rem;">
+          <a href="/rules.html" target="_blank" style="color: var(--accent-cyan); font-size: 0.85rem; font-family: var(--font-mono); text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem;">
+            <span>📖</span> <span>READ COMPETITION RULES ↗</span>
+          </a>
         </div>
       </form>
     </div>

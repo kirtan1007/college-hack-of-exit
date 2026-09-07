@@ -130,11 +130,8 @@
               Select which challenges will be played in this contest. All PCs receive the SAME selected questions in a shuffled/rotated order (e.g. PC-01 gets 1,2,3; PC-02 gets 2,3,1; PC-03 gets 3,1,2).
             </div>
           </div>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <button type="button" class="btn-cyber" id="btn-preset-3">🎯 FIRST 3 (QUICK)</button>
-            <button type="button" class="btn-cyber" id="btn-preset-5">⚡ FIRST 5</button>
-            <button type="button" class="btn-cyber" id="btn-preset-all">🌟 ALL 10</button>
-            <button type="button" class="btn-cyber btn-cyber-green" id="btn-save-active-questions">💾 SAVE CONTEST CONFIG</button>
+          <div>
+            <button type="button" class="btn-cyber btn-cyber-green" id="btn-save-active-questions" style="font-weight: 800; padding: 0.75rem 1.5rem; font-size: 0.95rem;">💾 SAVE CONTEST CONFIG</button>
           </div>
         </div>
 
@@ -149,6 +146,10 @@
             <div style="font-size: 0.82rem; color: #38bdf8;">
               💡 <em>When students finish the selected stages, they immediately WIN the escape room!</em>
             </div>
+          </div>
+          <!-- Dynamic Pattern Alternating Preview -->
+          <div id="pattern-preview-container" style="margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+            <!-- Rendered dynamically by updateContestSummary() -->
           </div>
         </div>
 
@@ -191,6 +192,9 @@
                 <option value="B">Set B</option>
                 <option value="C">Set C</option>
               </select>
+              <small style="font-family: var(--font-mono); font-size: 0.78rem; color: #38bdf8; display: block; margin-top: 0.4rem;">
+                💡 <strong>Auto Loop:</strong> 2 Questions ➔ PC-1: A, PC-2: B, PC-3: A, PC-4: B | 3 Questions ➔ PC-1: A, PC-2: B, PC-3: C, PC-4: A...
+              </small>
             </div>
             <div style="grid-column: 1 / -1; text-align: right;">
               <button type="submit" class="btn-cyber btn-cyber-green">SAVE TERMINAL CONFIG</button>
@@ -392,9 +396,9 @@
           <div class="form-group">
             <label for="set-name">Set Identifier (A/B/C)</label>
             <select id="set-name" class="form-control" required>
-              <option value="A">Set A</option>
-              <option value="B">Set B</option>
-              <option value="C">Set C</option>
+              <option value="A">Set A (Pattern A)</option>
+              <option value="B">Set B (Pattern B)</option>
+              <option value="C">Set C (Pattern C)</option>
             </select>
           </div>
           <div class="form-group">

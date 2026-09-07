@@ -210,55 +210,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
           // Live Clue Status & Sir Hint Helper Column
           let clueHintHtml = '';
-          const trueNumsStr = (q && q.trueScreenNumbers && q.trueScreenNumbers.length > 0)
-            ? q.trueScreenNumbers.map(n => String(n).padStart(2, '0')).join(', ')
-            : null;
-          
-          if (s.latestClueAttempt && s.latestClueAttempt.questionId === s.currentQuestion) {
-            const c = s.latestClueAttempt;
-            const correctStr = (c.correctNumbers && c.correctNumbers.length > 0)
-              ? c.correctNumbers.map(n => String(n).padStart(2, '0')).join(', ')
-              : 'None';
-            const wrongStr = (c.incorrectNumbers && c.incorrectNumbers.length > 0)
-              ? c.incorrectNumbers.map(n => String(n).padStart(2, '0')).join(', ')
-              : 'None';
-
+          if (isWin) {
+            passkeyHtml = `<span class="badge badge-green" style="font-size: 0.76rem;">VAULT CLEARED</span>`;
             clueHintHtml = `
-              <div style="font-size: 0.82rem; line-height: 1.35;">
-                ${trueNumsStr ? `
-                  <div style="margin-bottom: 0.35rem; padding: 0.25rem 0.55rem; background: rgba(0, 255, 136, 0.12); border: 1px solid rgba(0, 255, 136, 0.4); border-radius: 5px;">
-                    <span style="font-family: var(--font-heading); font-size: 0.72rem; color: #a7f3d0; font-weight: 700;">🎯 6 TRUE CLUES: </span>
-                    <strong style="font-family: var(--font-mono); color: #00ff88; font-size: 0.92rem; letter-spacing: 0.05em;">[${trueNumsStr}]</strong>
-                  </div>
-                ` : ''}
-                <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.25rem; flex-wrap: wrap;">
-                  <span style="color: #00ff88; font-weight: 800; font-family: var(--font-mono); background: rgba(0, 255, 136, 0.12); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid rgba(0, 255, 136, 0.3);">
-                    🟢 ${c.correctCount || 0} / 6 Correct
-                  </span>
-                  <span style="color: #ff0055; font-weight: 800; font-family: var(--font-mono); background: rgba(255, 0, 85, 0.12); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid rgba(255, 0, 85, 0.3);">
-                    🔴 ${c.incorrectCount || 0} / 6 Wrong
-                  </span>
-                </div>
-                <div style="font-family: var(--font-mono); font-size: 0.76rem; color: #cbd5e1;">
-                  <span style="color: #6ee7b7;">Chosen True: [${correctStr}]</span> | <span style="color: #fda4af;">Chosen False: [${wrongStr}]</span>
-                </div>
-                <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 5px; padding: 0.25rem 0.5rem; margin-top: 0.25rem; color: #fbbf24; font-size: 0.76rem;">
-                  💡 <strong>Sir Hint:</strong> ${c.incorrectCount > 0 ? `Clue <strong>#${wrongStr}</strong> is false! Tell student to re-check.` : `<strong style="color: #34d399;">All 6 clues are TRUE!</strong>`}
-                </div>
+              <div style="font-size: 0.82rem; color: #34d399; font-weight: 700;">
+                🏆 ALL CHALLENGES COMPLETED
               </div>
             `;
           } else {
-            clueHintHtml = `
-              <div style="font-size: 0.82rem;">
-                ${trueNumsStr ? `
-                  <div style="margin-bottom: 0.3rem; padding: 0.3rem 0.6rem; background: rgba(0, 255, 136, 0.12); border: 1px solid rgba(0, 255, 136, 0.4); border-radius: 5px;">
-                    <span style="font-family: var(--font-heading); font-size: 0.72rem; color: #a7f3d0; font-weight: 700;">🎯 6 TRUE CLUES: </span>
-                    <strong style="font-family: var(--font-mono); color: #00ff88; font-size: 0.95rem; letter-spacing: 0.05em;">[${trueNumsStr}]</strong>
+            const trueNumsStr = (q && q.trueScreenNumbers && q.trueScreenNumbers.length > 0)
+              ? q.trueScreenNumbers.map(n => String(n).padStart(2, '0')).join(', ')
+              : null;
+            
+            if (s.latestClueAttempt && s.latestClueAttempt.questionId === s.currentQuestion) {
+              const c = s.latestClueAttempt;
+              const correctStr = (c.correctNumbers && c.correctNumbers.length > 0)
+                ? c.correctNumbers.map(n => String(n).padStart(2, '0')).join(', ')
+                : 'None';
+              const wrongStr = (c.incorrectNumbers && c.incorrectNumbers.length > 0)
+                ? c.incorrectNumbers.map(n => String(n).padStart(2, '0')).join(', ')
+                : 'None';
+
+              clueHintHtml = `
+                <div style="font-size: 0.82rem; line-height: 1.35;">
+                  ${trueNumsStr ? `
+                    <div style="margin-bottom: 0.35rem; padding: 0.25rem 0.55rem; background: rgba(0, 255, 136, 0.12); border: 1px solid rgba(0, 255, 136, 0.4); border-radius: 5px;">
+                      <span style="font-family: var(--font-heading); font-size: 0.72rem; color: #a7f3d0; font-weight: 700;">🎯 6 TRUE CLUES: </span>
+                      <strong style="font-family: var(--font-mono); color: #00ff88; font-size: 0.92rem; letter-spacing: 0.05em;">[${trueNumsStr}]</strong>
+                    </div>
+                  ` : ''}
+                  <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                    <span style="color: #00ff88; font-weight: 800; font-family: var(--font-mono); background: rgba(0, 255, 136, 0.12); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid rgba(0, 255, 136, 0.3);">
+                      🟢 ${c.correctCount || 0} / 6 Correct
+                    </span>
+                    <span style="color: #ff0055; font-weight: 800; font-family: var(--font-mono); background: rgba(255, 0, 85, 0.12); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid rgba(255, 0, 85, 0.3);">
+                      🔴 ${c.incorrectCount || 0} / 6 Wrong
+                    </span>
                   </div>
-                ` : ''}
-                <span style="color: var(--text-dark); font-style: italic; font-size: 0.76rem;">No clues submitted yet</span>
-              </div>
-            `;
+                  <div style="font-family: var(--font-mono); font-size: 0.76rem; color: #cbd5e1;">
+                    <span style="color: #6ee7b7;">Chosen True: [${correctStr}]</span> | <span style="color: #fda4af;">Chosen False: [${wrongStr}]</span>
+                  </div>
+                  <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 5px; padding: 0.25rem 0.5rem; margin-top: 0.25rem; color: #fbbf24; font-size: 0.76rem;">
+                    💡 <strong>Sir Hint:</strong> ${c.incorrectCount > 0 ? `Clue <strong>#${wrongStr}</strong> is false! Tell student to re-check.` : `<strong style="color: #34d399;">All 6 clues are TRUE!</strong>`}
+                  </div>
+                </div>
+              `;
+            } else {
+              clueHintHtml = `
+                <div style="font-size: 0.82rem;">
+                  ${trueNumsStr ? `
+                    <div style="margin-bottom: 0.3rem; padding: 0.3rem 0.6rem; background: rgba(0, 255, 136, 0.12); border: 1px solid rgba(0, 255, 136, 0.4); border-radius: 5px;">
+                      <span style="font-family: var(--font-heading); font-size: 0.72rem; color: #a7f3d0; font-weight: 700;">🎯 6 TRUE CLUES: </span>
+                      <strong style="font-family: var(--font-mono); color: #00ff88; font-size: 0.95rem; letter-spacing: 0.05em;">[${trueNumsStr}]</strong>
+                    </div>
+                  ` : ''}
+                  <span style="color: var(--text-dark); font-style: italic; font-size: 0.76rem;">No clues submitted yet</span>
+                </div>
+              `;
+            }
           }
 
           let statusBadge = '<span class="badge badge-green">ACTIVE</span>';
@@ -1137,11 +1146,16 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
 
-        // Combine and shuffle clues
-        const combined = [
-          ...(q.goodClues || []).map(c => ({ ...c, isGood: true })),
-          ...(q.badClues || []).map(c => ({ ...c, isGood: false }))
-        ];
+        // Combine and shuffle clues (with backward compatibility for single goodClue/badClue)
+        const goodClueItems = (q.goodClues && q.goodClues.length > 0)
+          ? q.goodClues.map(c => ({ ...c, isGood: true }))
+          : (q.goodClue ? [{ clueId: 'G1', text: q.goodClue, isGood: true }] : []);
+
+        const badClueItems = (q.badClues && q.badClues.length > 0)
+          ? q.badClues.map(c => ({ ...c, isGood: false }))
+          : (q.badClue ? [{ clueId: 'B1', text: q.badClue, isGood: false }] : []);
+
+        const combined = [...goodClueItems, ...badClueItems];
 
         // Shuffle
         for (let i = combined.length - 1; i > 0; i--) {
@@ -1154,19 +1168,30 @@ document.addEventListener('DOMContentLoaded', () => {
         previewShowingLabels = false;
         document.getElementById('preview-clues-grid').classList.remove('show-labels');
 
-        combined.forEach((clue, idx) => {
-          const card = document.createElement('div');
-          card.className = `preview-clue-card ${clue.isGood ? 'clue-good-node' : 'clue-bad-node'}`;
-          const num = (idx + 1).toString().padStart(2, '0');
-          card.innerHTML = `
-            <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan); font-weight: bold;">CLUE ${num}</span>
-              <span class="preview-clue-tag ${clue.isGood ? 'tag-good' : 'tag-bad'}">${clue.isGood ? 'GOOD CLUE' : 'BAD CLUE'}</span>
+        if (combined.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column: 1 / -1; padding: 1.5rem; text-align: center; border: 1px dashed #334155; border-radius: 8px; color: #94a3b8; font-family: var(--font-mono); font-size: 0.85rem;">
+              ⚠️ No clues configured for this question in the database.
+              <div style="margin-top: 0.5rem; color: var(--accent-cyan);">
+                Run <strong>npm run seed</strong> in your terminal to populate all 12 mixed clues (6 Good + 6 Bad) per question.
+              </div>
             </div>
-            <div style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.4;">${escapeHtml(clue.text)}</div>
           `;
-          grid.appendChild(card);
-        });
+        } else {
+          combined.forEach((clue, idx) => {
+            const card = document.createElement('div');
+            card.className = `preview-clue-card ${clue.isGood ? 'clue-good-node' : 'clue-bad-node'}`;
+            const num = (idx + 1).toString().padStart(2, '0');
+            card.innerHTML = `
+              <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan); font-weight: bold;">CLUE ${num}</span>
+                <span class="preview-clue-tag ${clue.isGood ? 'tag-good' : 'tag-bad'}">${clue.isGood ? 'GOOD CLUE' : 'BAD CLUE'}</span>
+              </div>
+              <div style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.4;">${escapeHtml(clue.text)}</div>
+            `;
+            grid.appendChild(card);
+          });
+        }
 
         // Setup interactive solution & passkey testing
         window.activePreviewQuestion = q;
@@ -1548,6 +1573,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tbody.querySelectorAll('.active-question-toggle').forEach(cb => {
         cb.addEventListener('change', updateContestSummary);
       });
+      updateContestSummary();
     } catch (err) {
       console.error('loadActiveQuestionsConfig error:', err);
       App.showAlert('dashboard-alert', 'Network error retrieving active questions.');
@@ -1555,11 +1581,126 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const updateContestSummary = () => {
-    const checked = document.querySelectorAll('.active-question-toggle:checked');
+    const checked = Array.from(document.querySelectorAll('.active-question-toggle:checked'));
     const summaryEl = document.getElementById('active-questions-summary');
+    const container = document.getElementById('pattern-preview-container');
+
     if (summaryEl) {
       summaryEl.textContent = `${checked.length} Challenges Selected (${checked.length} Escape Stages per PC)`;
     }
+
+    if (!container) return;
+
+    const qids = checked.map(cb => cb.getAttribute('data-qid'));
+
+    if (qids.length === 0) {
+      container.innerHTML = `
+        <div style="color: #94a3b8; font-size: 0.85rem; font-family: var(--font-mono);">
+          ⚠️ No questions selected. Please select at least 1 question for the contest.
+        </div>
+      `;
+      return;
+    }
+
+    if (qids.length === 1) {
+      container.innerHTML = `
+        <div style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 6px; padding: 0.75rem;">
+          <div style="font-weight: 800; color: #38bdf8; margin-bottom: 0.3rem;">🖥️ ALL LAB PCS (Single Challenge Speed Run)</div>
+          <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #e2e8f0;">
+            <strong>Stage 1:</strong> <span style="color:#00ff88;">${escapeHtml(qids[0])}</span> ➔ 🏆 ESCAPE WIN
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    if (qids.length === 2) {
+      container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 0.6rem;">
+          <div style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 6px; padding: 0.75rem;">
+            <div style="font-weight: 800; color: #38bdf8; margin-bottom: 0.3rem;">🖥️ PATTERN A (Odd PCs: PC-01, PC-03, PC-05...)</div>
+            <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #e2e8f0;">
+              <strong>Stage 1:</strong> <span style="color:#38bdf8; font-weight: 800;">${escapeHtml(qids[0])}</span> ➔ 
+              <strong>Stage 2:</strong> <span style="color:#38bdf8; font-weight: 800;">${escapeHtml(qids[1])}</span> ➔ 🏆 WIN
+            </div>
+          </div>
+          <div style="background: rgba(0, 255, 136, 0.08); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 6px; padding: 0.75rem;">
+            <div style="font-weight: 800; color: #00ff88; margin-bottom: 0.3rem;">🖥️ PATTERN B (Even PCs: PC-02, PC-04, PC-06...)</div>
+            <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #e2e8f0;">
+              <strong>Stage 1:</strong> <span style="color:#00ff88; font-weight: 800;">${escapeHtml(qids[1])}</span> <em>(PC-1's 2nd)</em> ➔ 
+              <strong>Stage 2:</strong> <span style="color:#00ff88; font-weight: 800;">${escapeHtml(qids[0])}</span> <em>(PC-1's 1st)</em> ➔ 🏆 WIN
+            </div>
+          </div>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.78rem; color: #00ff88; background: rgba(0, 255, 136, 0.05); padding: 0.4rem 0.6rem; border-radius: 4px; border-left: 3px solid #00ff88;">
+          🛡️ <strong>ANTI-CHEAT ACTIVE:</strong> Adjacent PCs (e.g. PC-1 & PC-2) play opposite questions. They NEVER see the same puzzle at the same time!
+        </div>
+      `;
+      return;
+    }
+
+    if (qids.length === 3) {
+      const qA = [qids[0], qids[1], qids[2]];
+      const qB = [qids[1], qids[2], qids[0]];
+      const qC = [qids[2], qids[0], qids[1]];
+
+      container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 0.6rem;">
+          <div style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 6px; padding: 0.75rem;">
+            <div style="font-weight: 800; color: #38bdf8; margin-bottom: 0.3rem;">🖥️ PATTERN A (PC-01, PC-04, PC-07...)</div>
+            <div style="font-family: var(--font-mono); font-size: 0.83rem; color: #e2e8f0;">
+              <strong>Stage 1:</strong> <span style="color:#38bdf8; font-weight:800;">${escapeHtml(qA[0])}</span> ➔ 
+              <strong>Stage 2:</strong> <span style="color:#38bdf8; font-weight:800;">${escapeHtml(qA[1])}</span> ➔ 
+              <strong>Stage 3:</strong> <span style="color:#38bdf8; font-weight:800;">${escapeHtml(qA[2])}</span> ➔ 🏆 WIN
+            </div>
+          </div>
+          <div style="background: rgba(0, 255, 136, 0.08); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 6px; padding: 0.75rem;">
+            <div style="font-weight: 800; color: #00ff88; margin-bottom: 0.3rem;">🖥️ PATTERN B (PC-02, PC-05, PC-08...)</div>
+            <div style="font-family: var(--font-mono); font-size: 0.83rem; color: #e2e8f0;">
+              <strong>Stage 1:</strong> <span style="color:#00ff88; font-weight:800;">${escapeHtml(qB[0])}</span> ➔ 
+              <strong>Stage 2:</strong> <span style="color:#00ff88; font-weight:800;">${escapeHtml(qB[1])}</span> ➔ 
+              <strong>Stage 3:</strong> <span style="color:#00ff88; font-weight:800;">${escapeHtml(qB[2])}</span> ➔ 🏆 WIN
+            </div>
+          </div>
+          <div style="background: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 6px; padding: 0.75rem;">
+            <div style="font-weight: 800; color: #facc15; margin-bottom: 0.3rem;">🖥️ PATTERN C (PC-03, PC-06, PC-09...)</div>
+            <div style="font-family: var(--font-mono); font-size: 0.83rem; color: #e2e8f0;">
+              <strong>Stage 1:</strong> <span style="color:#facc15; font-weight:800;">${escapeHtml(qC[0])}</span> ➔ 
+              <strong>Stage 2:</strong> <span style="color:#facc15; font-weight:800;">${escapeHtml(qC[1])}</span> ➔ 
+              <strong>Stage 3:</strong> <span style="color:#facc15; font-weight:800;">${escapeHtml(qC[2])}</span> ➔ 🏆 WIN
+            </div>
+          </div>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.78rem; color: #38bdf8; background: rgba(56, 189, 248, 0.05); padding: 0.4rem 0.6rem; border-radius: 4px; border-left: 3px solid #38bdf8;">
+          🛡️ <strong>ANTI-CHEAT ROTATION GUARANTEE:</strong> Adjacent PCs (PC 1 & 2, PC 2 & 3, PC 3 & 4...) NEVER have the same question at any stage! (Stage 1: ${escapeHtml(qA[0])} vs ${escapeHtml(qB[0])} vs ${escapeHtml(qC[0])} — completely different!)
+        </div>
+      `;
+      return;
+    }
+
+    // For 4+ questions:
+    const patternsHtml = [0, 1, 2].map(idx => {
+      const rotated = [...qids.slice(idx), ...qids.slice(0, idx)];
+      const pcLabels = idx === 0 ? 'PC-01, PC-04...' : (idx === 1 ? 'PC-02, PC-05...' : 'PC-03, PC-06...');
+      const colors = ['#38bdf8', '#00ff88', '#facc15'];
+      return `
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 0.65rem;">
+          <div style="font-weight: 800; color: ${colors[idx]}; margin-bottom: 0.25rem;">🖥️ ${pcLabels}</div>
+          <div style="font-family: var(--font-mono); font-size: 0.78rem; color: #e2e8f0;">
+            ${rotated.map((id, i) => `S${i + 1}: <strong style="color:${colors[idx]}">${escapeHtml(id)}</strong>`).join(' ➔ ')} ➔ 🏆 WIN
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.8rem; margin-bottom: 0.5rem;">
+        ${patternsHtml}
+      </div>
+      <div style="font-family: var(--font-mono); font-size: 0.78rem; color: #00ff88; background: rgba(0, 255, 136, 0.05); padding: 0.4rem 0.6rem; border-radius: 4px; border-left: 3px solid #00ff88;">
+        🛡️ <strong>ANTI-CHEAT ROTATION GUARANTEE:</strong> Every terminal plays in shifted cyclic order. Neighboring lab PCs never have the same challenge simultaneously.
+      </div>
+    `;
   };
 
   const setQuestionPreset = (count) => {
@@ -1591,7 +1732,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const data = await res.json();
       if (data.success) {
-        App.showAlert('dashboard-alert', `✓ SUCCESS: Contest updated with ${activeQuestionIds.length} challenges! All PCs will play these ${activeQuestionIds.length} questions in shuffled order.`, 'success');
+        App.showAlert('dashboard-alert', `✓ SUCCESS: Contest updated with ${activeQuestionIds.length} challenges! Odd PCs will play Pattern A and Even PCs will play Pattern B.`, 'success');
         updateContestSummary();
       } else {
         App.showAlert('dashboard-alert', data.message || 'Failed to update contest questions.', 'danger');
@@ -1602,16 +1743,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Preset & Save Button Listeners
-  const btnPreset3 = document.getElementById('btn-preset-3');
-  if (btnPreset3) btnPreset3.addEventListener('click', () => setQuestionPreset(3));
-
-  const btnPreset5 = document.getElementById('btn-preset-5');
-  if (btnPreset5) btnPreset5.addEventListener('click', () => setQuestionPreset(5));
-
-  const btnPresetAll = document.getElementById('btn-preset-all');
-  if (btnPresetAll) btnPresetAll.addEventListener('click', () => setQuestionPreset(-1));
-
+  // Save Button Listener
   const btnSaveActiveQuestions = document.getElementById('btn-save-active-questions');
   if (btnSaveActiveQuestions) btnSaveActiveQuestions.addEventListener('click', saveActiveQuestionsConfig);
 

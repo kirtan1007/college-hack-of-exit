@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "strat": "node server.js",
-    "seed": "node backend/seed.js"
+    "seed": "node seed_pdf_questions.js",
+    "seed:backup": "node backend/seed.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

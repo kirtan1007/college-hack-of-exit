@@ -180,19 +180,24 @@ const getGameSession = async (req, res) => {
             session.questionProgress.push(progress);
           }
 
-          // Build 12 mixed clues: 6 good + 6 bad
-          // Sanitize each clue item: only clueId, text, imageUrl (NEVER good/bad classification)
-          const sanitizedGood = (question.goodClues || []).map((c, i) => ({
+          // Build 12 mixed clues: 6 good + 6 bad (with fallback to legacy single goodClue/badClue)
+          let sanitizedGood = (question.goodClues || []).map((c, i) => ({
             clueId: c.clueId || `G${i + 1}`,
             text: c.text,
             imageUrl: c.imageUrl || ''
           }));
+          if (sanitizedGood.length === 0 && question.goodClue) {
+            sanitizedGood = [{ clueId: 'G1', text: question.goodClue, imageUrl: '' }];
+          }
 
-          const sanitizedBad = (question.badClues || []).map((c, i) => ({
+          let sanitizedBad = (question.badClues || []).map((c, i) => ({
             clueId: c.clueId || `B${i + 1}`,
             text: c.text,
             imageUrl: c.imageUrl || ''
           }));
+          if (sanitizedBad.length === 0 && question.badClue) {
+            sanitizedBad = [{ clueId: 'B1', text: question.badClue, imageUrl: '' }];
+          }
 
           const allPool = [...sanitizedGood, ...sanitizedBad];
           const poolMap = {};
@@ -407,11 +412,11 @@ const submitClueSelection = async (req, res) => {
   try {
     let session;
     if (sessionId) {
-      session = await GameSession.findOne({ sessionId });
+      session = await GameSession.findOne({ sessionId }).populate('studentId');
     } else {
       const studentId = req.student ? req.student._id : (req.body.studentId || req.query.studentId);
       if (studentId) {
-        session = await GameSession.findOne({ studentId, status: 'ACTIVE' });
+        session = await GameSession.findOne({ studentId, status: 'ACTIVE' }).populate('studentId');
       }
     }
 
@@ -550,14 +555,23 @@ const submitClueSelection = async (req, res) => {
         session.wrongChoices || 0
       );
 
+      let studentDoc = session.studentId;
+      if (!studentDoc || !studentDoc.name) {
+        studentDoc = await Student.findById(session.studentId);
+      }
+      const sId = (studentDoc && studentDoc._id) || session.studentId;
+      const sName = (studentDoc && studentDoc.name) || 'Student';
+      const sEnroll = (studentDoc && studentDoc.enrollmentNumber) || (session.pcId || 'N/A');
+      const sDept = (studentDoc && studentDoc.department) || '';
+
       let resultObj = await Result.findOne({ sessionId: session.sessionId });
       if (!resultObj) {
         resultObj = new Result({
-          studentId: session.studentId._id,
+          studentId: sId,
           sessionId: session.sessionId,
-          studentName: session.studentId.name,
-          enrollmentNumber: session.studentId.enrollmentNumber,
-          department: session.studentId.department || '',
+          studentName: sName,
+          enrollmentNumber: sEnroll,
+          department: sDept,
           pcId: session.pcId,
           set: session.questionSet,
           completionTime: elapsedSeconds,

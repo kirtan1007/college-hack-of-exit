@@ -6,8 +6,7 @@
     "startQuestionId": "Q01",
     "finalQuestionId": "Q10",
     "difficulty": "medium",
-    "active": true,
-    "_id": "mq57psdnj7ciq3lllf"
+    "active": true
   },
   {
     "name": "B",
@@ -16,8 +15,7 @@
     "startQuestionId": "Q01",
     "finalQuestionId": "Q10",
     "difficulty": "medium",
-    "active": true,
-    "_id": "ffbvhls013vq9bmq0f"
+    "active": true
   },
   {
     "name": "C",
@@ -26,7 +24,6 @@
     "startQuestionId": "Q01",
     "finalQuestionId": "Q10",
     "difficulty": "medium",
-    "active": true,
-    "_id": "dy1rhzm853zc08rxle"
+    "active": true
   }
 ]

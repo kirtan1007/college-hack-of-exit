@@ -37,41 +37,7 @@ const registerStudent = async (req, res) => {
       await student.save();
     }
 
-    // Identify assigned set for this PC
-    const sanitizedPcId = (pcId || 'PC-01').trim().toUpperCase();
-    let pcAssign = await PCAssignment.findOne({ pcId: sanitizedPcId });
-    if (!pcAssign) {
-      // Determine set dynamically based on PC ID number
-      const pcNumMatch = sanitizedPcId.match(/\d+/);
-      let assignedSet = 'A';
-      if (pcNumMatch) {
-        const pcNum = parseInt(pcNumMatch[0], 10);
-        const rem = pcNum % 3;
-        if (rem === 1) assignedSet = 'A';
-        else if (rem === 2) assignedSet = 'B';
-        else if (rem === 0) assignedSet = 'C';
-      }
-      
-      // If PC assignment doesn't exist, create it
-      pcAssign = new PCAssignment({
-        pcId: sanitizedPcId,
-        assignedSet: assignedSet
-      });
-      await pcAssign.save();
-    }
-
-    const assignedSet = pcAssign.assignedSet || 'A';
-
-    // Verify question set configuration exists
-    const qSetObj = await QuestionSet.findOne({ name: assignedSet });
-    if (!qSetObj) {
-      return res.status(500).json({
-        success: false,
-        message: `Question Set ${assignedSet} is not seeded or configured on the server. Please contact an admin.`
-      });
-    }
-
-    // Get system settings for timer
+    // Get system settings for timer and active questions
     let settings = await SystemSettings.findOne();
     if (!settings) {
       settings = new SystemSettings();
@@ -91,24 +57,57 @@ const registerStudent = async (req, res) => {
       activePool = allQ.map(q => q.questionId);
     }
 
-    // Fallback if still empty
     if (activePool.length === 0) {
-      activePool = ['Q01', 'Q02', 'Q03'];
+      activePool = ['Q01', 'Q02'];
     }
 
-    // Generate per-PC rotated question order (e.g. PC-01 gets 1,2,3; PC-02 gets 2,3,1; PC-03 gets 3,1,2)
+    // Identify assigned set for this PC
+    const sanitizedPcId = (pcId || 'PC-01').trim().toUpperCase();
     const pcNumMatch = sanitizedPcId.match(/\d+/);
     const pcNum = pcNumMatch ? parseInt(pcNumMatch[0], 10) : 1;
-    const offset = (pcNum - 1) % activePool.length;
-    let sequence = [...activePool.slice(offset), ...activePool.slice(0, offset)];
 
-    // If PC number exceeds the pool length, invert alternate cycles for varied ordering
-    const cycle = Math.floor((pcNum - 1) / activePool.length);
-    if (cycle % 2 === 1 && sequence.length > 2) {
-      const first = sequence[0];
-      const rest = sequence.slice(1).reverse();
-      sequence = [first, ...rest];
+    // Dynamic pattern assignment based on active questions:
+    // If 2 questions active: alternate A & B (PC-1=A, PC-2=B, PC-3=A, PC-4=B...)
+    // If 3+ questions active: cycle A, B, C (PC-1=A, PC-2=B, PC-3=C, PC-4=A...)
+    let dynamicPattern = 'A';
+    if (activePool.length === 2) {
+      dynamicPattern = (pcNum % 2 === 1) ? 'A' : 'B';
+    } else {
+      const rem = pcNum % 3;
+      if (rem === 1) dynamicPattern = 'A';
+      else if (rem === 2) dynamicPattern = 'B';
+      else dynamicPattern = 'C';
     }
+
+    let pcAssign = await PCAssignment.findOne({ pcId: sanitizedPcId });
+    if (!pcAssign) {
+      pcAssign = new PCAssignment({
+        pcId: sanitizedPcId,
+        assignedSet: dynamicPattern
+      });
+      await pcAssign.save();
+    } else {
+      // Keep terminal in sync with active contest pattern rules
+      pcAssign.assignedSet = dynamicPattern;
+      await pcAssign.save();
+    }
+
+    const assignedSet = dynamicPattern;
+
+    // Verify question set configuration exists
+    let qSetObj = await QuestionSet.findOne({ name: assignedSet });
+    if (!qSetObj) {
+      // Fallback to Set A if specific set not seeded
+      qSetObj = await QuestionSet.findOne({ name: 'A' }) || { entryBinaryPassword: '1001' };
+    }
+
+    // Anti-Cheat Adjacent-PC Disjoint Rotation:
+    // Every PC gets offset = (pcNum - 1) % activePool.length
+    // For 2 questions: PC 1 gets [Q1, Q2], PC 2 gets [Q2, Q1], PC 3 gets [Q1, Q2]...
+    // For 3 questions: PC 1 gets [Q1, Q2, Q3], PC 2 gets [Q2, Q3, Q1], PC 3 gets [Q3, Q1, Q2]...
+    // Guarantee: Adjacent PCs (PC 1 & PC 2, PC 2 & PC 3, etc.) NEVER have the same question at any stage!
+    const offset = (pcNum - 1) % activePool.length;
+    const sequence = [...activePool.slice(offset), ...activePool.slice(0, offset)];
 
     const startQId = sequence[0] || qSetObj.startQuestionId || 'Q01';
 

@@ -29,12 +29,13 @@ const questionSchema = new mongoose.Schema({
   },
   set: {
     type: String,
-    enum: ['A', 'B', 'C'],
-    required: true
+    default: 'ALL',
+    trim: true
   },
   setName: {
     type: String,
-    enum: ['A', 'B', 'C']
+    default: 'ALL',
+    trim: true
   },
   title: {
     type: String,

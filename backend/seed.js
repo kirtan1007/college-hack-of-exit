@@ -70,18 +70,19 @@ const seedDB = async () => {
     await PCAssignment.insertMany([
       { pcId: 'PC-01', assignedSet: 'A' },
       { pcId: 'PC-02', assignedSet: 'B' },
-      { pcId: 'PC-03', assignedSet: 'C' }
+      { pcId: 'PC-03', assignedSet: 'A' },
+      { pcId: 'PC-04', assignedSet: 'B' }
     ]);
     console.log('Default PC Assignments seeded.');
 
-    // 4. Seed Question Sets
+    // 4. Seed Question Sets (Pattern A & Pattern B)
     const sets = [
       {
         name: 'A',
         entryOctal: '11',
         entryBinaryPassword: '1001',
-        startQuestionId: 'QA-1',
-        finalQuestionId: 'QA-FINAL',
+        startQuestionId: 'Q01',
+        finalQuestionId: 'Q02',
         difficulty: 'medium',
         active: true
       },
@@ -89,17 +90,8 @@ const seedDB = async () => {
         name: 'B',
         entryOctal: '15',
         entryBinaryPassword: '1101',
-        startQuestionId: 'QB-1',
-        finalQuestionId: 'QB-FINAL',
-        difficulty: 'medium',
-        active: true
-      },
-      {
-        name: 'C',
-        entryOctal: '17',
-        entryBinaryPassword: '1111',
-        startQuestionId: 'QC-1',
-        finalQuestionId: 'QC-FINAL',
+        startQuestionId: 'Q02',
+        finalQuestionId: 'Q01',
         difficulty: 'medium',
         active: true
       }

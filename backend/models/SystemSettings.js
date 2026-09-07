@@ -31,7 +31,7 @@ const systemSettingsSchema = new mongoose.Schema({
   },
   activeQuestionIds: {
     type: [String],
-    default: ['Q01', 'Q02', 'Q03']
+    default: ['Q01', 'Q02', 'Q03', 'Q04', 'Q05', 'Q06', 'Q07', 'Q08', 'Q09', 'Q10']
   }
 }, { timestamps: true });
 
