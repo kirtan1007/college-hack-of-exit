@@ -65,15 +65,18 @@ const seedDB = async () => {
     await settings.save();
     console.log('System settings seeded.');
 
-    // 3. Seed PC Assignments default list
+    // 3. Seed PC Assignments default list (PC-01 to PC-20 alternating A/B)
     await PCAssignment.deleteMany({});
-    await PCAssignment.insertMany([
-      { pcId: 'PC-01', assignedSet: 'A' },
-      { pcId: 'PC-02', assignedSet: 'B' },
-      { pcId: 'PC-03', assignedSet: 'A' },
-      { pcId: 'PC-04', assignedSet: 'B' }
-    ]);
-    console.log('Default PC Assignments seeded.');
+    const pcSeeds = [];
+    for (let i = 1; i <= 20; i++) {
+      const pad = i < 10 ? '0' + i : '' + i;
+      pcSeeds.push({
+        pcId: `PC-${pad}`,
+        assignedSet: i % 2 === 1 ? 'A' : 'B'
+      });
+    }
+    await PCAssignment.insertMany(pcSeeds);
+    console.log(`Default PC Assignments seeded (${pcSeeds.length} terminals).`);
 
     // 4. Seed Question Sets (Pattern A & Pattern B)
     const sets = [

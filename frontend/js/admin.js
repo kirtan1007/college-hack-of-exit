@@ -671,6 +671,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const btnGen20 = document.getElementById('btn-generate-20-pcs');
+  if (btnGen20) {
+    btnGen20.addEventListener('click', async () => {
+      if (!confirm('Generate 20 PC terminals (PC-01 to PC-20) with alternating Set A & Set B?')) return;
+      App.hideAlert('dashboard-alert');
+      try {
+        const response = await fetch('/api/admin/pc-assignment/generate-20', {
+          method: 'POST',
+          headers: getHeaders()
+        });
+        const data = await response.json();
+        if (data.success) {
+          App.showAlert('dashboard-alert', data.message, 'success');
+          loadPCAssignments();
+        } else {
+          App.showAlert('dashboard-alert', data.message);
+        }
+      } catch (err) {
+        console.error(err);
+        App.showAlert('dashboard-alert', 'Network error generating 20 PCs.');
+      }
+    });
+  }
+
   window.deletePCAssignment = async (id) => {
     if (!confirm('Remove this PC terminal mapping?')) return;
     try {

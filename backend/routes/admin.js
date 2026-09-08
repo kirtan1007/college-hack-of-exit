@@ -4,6 +4,7 @@ const {
   getPCAssignments,
   savePCAssignment,
   deletePCAssignment,
+  generate20PCs,
   getTimerSettings,
   saveTimerSettings,
   getSystemSettings,
@@ -26,6 +27,7 @@ router.post('/active-questions', saveActiveQuestionsConfig);
 
 router.get('/pc-assignment', getPCAssignments);
 router.post('/pc-assignment', savePCAssignment);
+router.post('/pc-assignment/generate-20', generate20PCs);
 router.delete('/pc-assignment/:id', deletePCAssignment);
 
 router.get('/timer', getTimerSettings);

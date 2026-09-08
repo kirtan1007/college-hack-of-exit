@@ -63,6 +63,39 @@ const deletePCAssignment = async (req, res) => {
   }
 };
 
+// Generate 20 PCs (PC-01 to PC-20 alternating A and B)
+const generate20PCs = async (req, res) => {
+  try {
+    const activeSessions = await GameSession.find({ status: 'ACTIVE' });
+    if (activeSessions && activeSessions.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot regenerate PCs while there are active game sessions.'
+      });
+    }
+
+    await PCAssignment.deleteMany({});
+    const pcSeeds = [];
+    for (let i = 1; i <= 20; i++) {
+      const pad = i < 10 ? '0' + i : '' + i;
+      pcSeeds.push({
+        pcId: `PC-${pad}`,
+        assignedSet: i % 2 === 1 ? 'A' : 'B'
+      });
+    }
+    await PCAssignment.insertMany(pcSeeds);
+    const assignments = await PCAssignment.find().sort({ pcId: 1 });
+    return res.json({
+      success: true,
+      message: 'Successfully generated 20 PC terminals (PC-01 to PC-20 with alternating Set A & Set B)',
+      assignments
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Failed to generate 20 PCs' });
+  }
+};
+
 // Get Timer settings
 const getTimerSettings = async (req, res) => {
   try {
@@ -438,6 +471,7 @@ module.exports = {
   getPCAssignments,
   savePCAssignment,
   deletePCAssignment,
+  generate20PCs,
   getTimerSettings,
   saveTimerSettings,
   getSystemSettings,
