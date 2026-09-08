@@ -102,26 +102,25 @@
             </div>
           </section>
 
-          <!-- RIGHT: SOLUTION & PASSKEY PANEL (Magenta / Pink Theme) -->
+          <!-- RIGHT: SOLUTION PANEL (Unified: Answer or Passkey in 1 Input) -->
           <section class="solution-panel-pink" id="passkey-panel">
-            <div class="solution-header-row">
-              <span class="solution-lock-icon">🔒</span>
-              <h3 class="solution-title">YOUR SOLUTION</h3>
+            <div class="solution-header-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="solution-lock-icon">🔒</span>
+                <h3 class="solution-title" style="margin: 0;">YOUR SOLUTION</h3>
+              </div>
+              <div id="passkey-quota-badge" style="font-family: var(--font-mono); font-size: 0.78rem; padding: 4px 10px; border-radius: 6px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.35); color: #00f0ff; letter-spacing: 0.5px; font-weight: 600;">
+                PASSKEYS: <span id="passkey-quota-count" style="color: #00ff88;">0</span> / 3 USED
+              </div>
             </div>
 
-            <!-- Toggle Tabs: Answer vs Direct Passkey -->
-            <div class="solution-tabs-row">
-              <button type="button" class="sol-tab-btn active" id="tab-answer">ANSWER</button>
-              <button type="button" class="sol-tab-btn" id="tab-passkey">DIRECT PASSKEY</button>
-            </div>
-
-            <p class="solution-instruction" id="solution-instruction-text">
-              Enter the output string OR use a direct passkey to bypass this challenge.
+            <p class="solution-instruction" id="solution-instruction-text" style="margin-top: 0.6rem; margin-bottom: 0.8rem;">
+              Enter the code output / answer OR enter a master passkey to bypass (Max 3 passkeys allowed).
             </p>
 
             <form id="passkey-form" class="solution-input-form">
               <div class="solution-input-wrapper">
-                <input type="text" id="passkey-input" class="solution-text-input" placeholder="Type your answer here..." autocomplete="off">
+                <input type="text" id="passkey-input" class="solution-text-input" placeholder="Enter answer or passkey here..." autocomplete="off">
               </div>
 
               <button type="submit" class="btn-gradient-submit" id="btn-submit-passkey">
@@ -235,10 +234,31 @@
           TRY AGAIN
         </button>
       </div>
+  <!-- Popup: Passkey Limit Reached Modal -->
+  <div id="modal-passkey-limit" class="modal-overlay">
+    <div class="clue-modal-content" style="border: 2px solid #ff0055; box-shadow: 0 0 45px rgba(255, 0, 85, 0.65); text-align: center; max-width: 500px; width: 92%; background: rgba(8, 12, 28, 0.98); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 14px; padding: 2.2rem 1.6rem; z-index: 100001;">
+      <div style="font-size: 3.2rem; line-height: 1; margin-bottom: 0.6rem;">🔒</div>
+      <h3 style="font-family: 'Outfit', sans-serif; color: #ff0055; font-size: 1.45rem; font-weight: 800; margin: 0 0 0.8rem 0; letter-spacing: 1.5px; text-shadow: 0 0 16px rgba(255, 0, 85, 0.7);">
+        PASSKEY LIMIT REACHED!
+      </h3>
+      <p id="passkey-limit-popup-msg" style="color: #e2e8f0; font-size: 1rem; line-height: 1.6; margin: 0 0 1.6rem 0;">
+        Passkey <strong>3 વખત વપરાઈ ગઈ છે</strong> (Right હોય કે Wrong).<br>
+        <span style="color: #ff3377; font-weight: 700; display: inline-block; margin-top: 0.5rem; font-size: 1.05rem;">
+          હવે passkey નો ઉપયોગ થઈ શકશે નહીં!
+        </span><br>
+        <span style="color: #00f0ff; font-weight: 500; display: inline-block; margin-top: 0.4rem;">
+          હવે તમારે કોડનો જવાબ (Answer) આપીને અથવા 6 Clues પસંદ કરીને આગળ વધવું પડશે.
+        </span>
+      </p>
+      <div style="display: flex; gap: 0.8rem; justify-content: center;">
+        <button type="button" class="btn-gradient-submit" id="btn-close-passkey-limit" style="background: linear-gradient(90deg, #ff0055 0%, #ec4899 100%); max-width: 220px; padding: 0.75rem 1.5rem; font-size: 1rem; box-shadow: 0 0 25px rgba(255, 0, 85, 0.6); cursor: pointer; border-radius: 8px; border: none; color: #ffffff; letter-spacing: 1px;">
+          OK / UNDERSTOOD
+        </button>
+      </div>
     </div>
   </div>
 
   <script src="/js/app.js"></script>
-  <script src="/js/game.js?v=4.1"></script>
+  <script src="/js/game.js?v=4.2"></script>
 </body>
 </html>

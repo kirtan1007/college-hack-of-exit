@@ -259,6 +259,8 @@ const getGameSession = async (req, res) => {
         trapCount: session.trapCount,
         questionsSolved: session.questionsSolved,
         passkeysUsed: session.passkeysUsed || 0,
+        maxPasskeys: 3,
+        passkeysRemaining: Math.max(0, 3 - (session.passkeysUsed || 0)),
         totalAnswerAttempts: session.totalAnswerAttempts || 0,
         currentQuestion: currentQuestionData,
         currentTrap: currentTrapData,
@@ -716,11 +718,30 @@ const submitAnswer = async (req, res) => {
     // Validate Answer
     const expectedAnswer = (question.answerKey || question.answer || '').trim().toLowerCase();
     const expectedPasskey = (question.directPasskey || '').trim().toLowerCase();
-    const isCorrect = (expectedAnswer && cleanAnswer === expectedAnswer) || (expectedPasskey && cleanAnswer === expectedPasskey);
+    const isAnswerMatch = expectedAnswer && cleanAnswer === expectedAnswer;
+    const isPasskeyMatch = expectedPasskey && cleanAnswer === expectedPasskey;
+
+    if (isPasskeyMatch && !isAnswerMatch) {
+      // User entered direct passkey into answer input
+      const MAX_PASSKEYS = 3;
+      if ((session.passkeysUsed || 0) >= MAX_PASSKEYS) {
+        return res.status(400).json({
+          success: false,
+          limitReached: true,
+          message: '✗ PASSKEY LIMIT REACHED: Maximum 3 passkeys allowed per game. Passkeys can no longer be used (whether right or wrong). Please enter the correct challenge answer or select 6 clues.',
+          passkeysUsed: session.passkeysUsed || 0,
+          passkeysRemaining: 0
+        });
+      }
+      session.passkeysUsed = (session.passkeysUsed || 0) + 1;
+    }
+
+    const isCorrect = isAnswerMatch || isPasskeyMatch;
 
     if (isCorrect) {
       progress.solvedAt = new Date();
-      progress.completedBy = 'answer';
+      progress.completedBy = isPasskeyMatch && !isAnswerMatch ? 'passkey' : 'answer';
+      if (isPasskeyMatch && !isAnswerMatch) progress.passkeyUsed = true;
       session.questionsSolved = (session.questionsSolved || 0) + 1;
 
       const isFinal = checkIsFinalChallenge(session, question);
@@ -769,7 +790,12 @@ const submitAnswer = async (req, res) => {
 
         return res.json({
           success: true,
-          message: '✓ ACCESS KEY VERIFIED\n✓ FINAL SECURITY PROTOCOL BYPASS COMPLETE',
+          message: isPasskeyMatch && !isAnswerMatch
+            ? '✓ DIRECT PASSKEY ACCEPTED\n✓ FINAL SECURITY PROTOCOL BYPASS COMPLETE'
+            : '✓ ACCESS KEY VERIFIED\n✓ FINAL SECURITY PROTOCOL BYPASS COMPLETE',
+          bypassedWithPasskey: isPasskeyMatch && !isAnswerMatch,
+          passkeysUsed: session.passkeysUsed || 0,
+          passkeysRemaining: Math.max(0, 3 - (session.passkeysUsed || 0)),
           completed: true,
           escaped: true
         });
@@ -792,7 +818,12 @@ const submitAnswer = async (req, res) => {
 
       return res.json({
         success: true,
-        message: '✓ ACCESS KEY VERIFIED\n✓ PUZZLE SOLVED',
+        message: isPasskeyMatch && !isAnswerMatch
+          ? '✓ DIRECT PASSKEY ACCEPTED\n✓ BYPASSING TO NEXT CHALLENGE'
+          : '✓ ACCESS KEY VERIFIED\n✓ PUZZLE SOLVED',
+        bypassedWithPasskey: isPasskeyMatch && !isAnswerMatch,
+        passkeysUsed: session.passkeysUsed || 0,
+        passkeysRemaining: Math.max(0, 3 - (session.passkeysUsed || 0)),
         nextQuestionId: nextDest,
         completed: nextDest === 'WIN' || nextDest === 'EXIT'
       });
@@ -870,14 +901,26 @@ const submitPasskey = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Active question not found.' });
     }
 
+    // Strict Passkey Limit: Maximum 3 passkeys allowed across the entire game
+    const MAX_PASSKEYS = 3;
+    if ((session.passkeysUsed || 0) >= MAX_PASSKEYS) {
+      return res.status(400).json({
+        success: false,
+        limitReached: true,
+        message: '✗ PASSKEY LIMIT REACHED: You have already used 3 passkeys (maximum 3 allowed). Passkeys can no longer be used (whether right or wrong). Please enter the puzzle answer or select 6 clues.',
+        passkeysUsed: session.passkeysUsed || 0,
+        passkeysRemaining: 0
+      });
+    }
+
     const cleanPasskey = passkey.trim().toLowerCase();
     const expectedPasskey = (question.directPasskey || '').trim().toLowerCase();
-    const expectedAnswer = (question.answerKey || question.answer || '').trim().toLowerCase();
 
-    const isMatch = (expectedPasskey && cleanPasskey === expectedPasskey) || (expectedAnswer && cleanPasskey === expectedAnswer);
+    // Verify specifically against directPasskey (not regular puzzle answer)
+    const isMatch = expectedPasskey && cleanPasskey === expectedPasskey;
 
     if (isMatch) {
-      // Answer or passkey matched!
+      // Direct passkey matched!
       session.passkeysUsed = (session.passkeysUsed || 0) + 1;
       session.questionsSolved = (session.questionsSolved || 0) + 1;
 
@@ -948,7 +991,9 @@ const submitPasskey = async (req, res) => {
           bypassed: true,
           escaped: true,
           completed: true,
-          message: '✓ DIRECT ACCESS GRANTED\n\nBYPASSING CLUE ANALYSIS...'
+          message: '✓ DIRECT ACCESS GRANTED\n\nBYPASSING CLUE ANALYSIS...',
+          passkeysUsed: session.passkeysUsed,
+          passkeysRemaining: Math.max(0, MAX_PASSKEYS - session.passkeysUsed)
         });
       }
 
@@ -963,7 +1008,9 @@ const submitPasskey = async (req, res) => {
         bypassed: true,
         message: '✓ DIRECT ACCESS GRANTED\n\nBYPASSING CLUE ANALYSIS...',
         nextQuestionId: nextDest,
-        completed: nextDest === 'WIN' || nextDest === 'EXIT'
+        completed: nextDest === 'WIN' || nextDest === 'EXIT',
+        passkeysUsed: session.passkeysUsed,
+        passkeysRemaining: Math.max(0, MAX_PASSKEYS - session.passkeysUsed)
       });
     } else {
       session.wrongChoices = (session.wrongChoices || 0) + 1;
@@ -996,10 +1043,19 @@ const submitPasskey = async (req, res) => {
         penaltyMsg = ` -${penaltySeconds}s time penalty applied.`;
       }
 
+      // Increment passkeysUsed on wrong passkey attempts as well (Right or Wrong counts as use)
+      session.passkeysUsed = (session.passkeysUsed || 0) + 1;
+      const isLimitNow = (session.passkeysUsed || 0) >= MAX_PASSKEYS;
+
       await session.save();
       return res.status(400).json({
         success: false,
-        message: `✗ INVALID DIRECT PASSKEY.${penaltyMsg}`
+        limitReached: isLimitNow,
+        message: isLimitNow
+          ? `✗ INVALID DIRECT PASSKEY.${penaltyMsg} Passkey limit reached (3/3 used). Passkeys cannot be used anymore!`
+          : `✗ INVALID DIRECT PASSKEY.${penaltyMsg} (${session.passkeysUsed}/${MAX_PASSKEYS} passkey uses used)`,
+        passkeysUsed: session.passkeysUsed || 0,
+        passkeysRemaining: Math.max(0, MAX_PASSKEYS - (session.passkeysUsed || 0))
       });
     }
   } catch (error) {

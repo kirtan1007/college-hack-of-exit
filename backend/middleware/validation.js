@@ -15,11 +15,13 @@ const validateStudentRegistration = async (req, res, next) => {
     return res.status(400).json({ success: false, message: 'Enrollment Number is required' });
   }
 
-  if (!semester || !semester.trim()) {
+  const semStr = semester !== undefined && semester !== null ? String(semester).trim() : '';
+  if (!semStr) {
     return res.status(400).json({ success: false, message: 'Semester is required' });
   }
 
-  if (!whatsapp || !whatsapp.trim() || whatsapp.trim().length < 8) {
+  const waStr = whatsapp !== undefined && whatsapp !== null ? String(whatsapp).trim() : '';
+  if (!waStr || waStr.length < 8) {
     return res.status(400).json({ success: false, message: 'A valid WhatsApp Number is required' });
   }
 

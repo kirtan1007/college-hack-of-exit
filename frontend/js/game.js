@@ -39,31 +39,59 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSubmitCluesEl = document.getElementById('btn-submit-clues');
   const btnSubmitCluesBottomEl = document.getElementById('btn-submit-clues-bottom');
 
-  // Solution Tabs & Direct Passkey Form
-  const tabAnswerEl = document.getElementById('tab-answer');
-  const tabPasskeyEl = document.getElementById('tab-passkey');
+  // Solution Form & Unified Input (Single Input for Answer or Passkey)
   const solutionInstructionTextEl = document.getElementById('solution-instruction-text');
   const passkeyFormEl = document.getElementById('passkey-form');
   const passkeyInputEl = document.getElementById('passkey-input');
   const btnSubmitPasskey = document.getElementById('btn-submit-passkey');
+  const passkeyQuotaBadgeEl = document.getElementById('passkey-quota-badge');
+  const passkeyQuotaCountEl = document.getElementById('passkey-quota-count');
 
-  // Setup Solution Tab Toggling
-  if (tabAnswerEl && tabPasskeyEl) {
-    tabAnswerEl.addEventListener('click', () => {
-      tabAnswerEl.classList.add('active');
-      tabPasskeyEl.classList.remove('active');
-      if (passkeyInputEl) passkeyInputEl.placeholder = 'Type your answer here...';
+  let passkeysUsed = 0;
+  let maxPasskeys = 3;
+
+  const updatePasskeyQuotaDisplay = () => {
+    if (!passkeyQuotaBadgeEl) return;
+    const remaining = Math.max(0, maxPasskeys - passkeysUsed);
+    if (passkeysUsed >= maxPasskeys) {
+      passkeyQuotaBadgeEl.style.background = 'rgba(255, 0, 85, 0.15)';
+      passkeyQuotaBadgeEl.style.borderColor = 'rgba(255, 0, 85, 0.5)';
+      passkeyQuotaBadgeEl.style.color = '#ff0055';
+      passkeyQuotaBadgeEl.innerHTML = `PASSKEYS: <span style="color: #ff3377; font-weight: bold;">3 / 3 (LIMIT REACHED)</span>`;
       if (solutionInstructionTextEl) {
-        solutionInstructionTextEl.textContent = 'Enter the output string OR use a direct passkey to bypass this challenge.';
+        solutionInstructionTextEl.innerHTML = '<span style="color: #ff3377; font-weight: bold;">⚠️ PASSKEY LIMIT REACHED (3/3 USED):</span> Passkeys cannot be used anymore. Please enter the code output answer or select 6 clues.';
       }
-    });
-
-    tabPasskeyEl.addEventListener('click', () => {
-      tabPasskeyEl.classList.add('active');
-      tabAnswerEl.classList.remove('active');
-      if (passkeyInputEl) passkeyInputEl.placeholder = 'Enter direct passkey here...';
+    } else {
+      passkeyQuotaBadgeEl.style.background = 'rgba(0, 240, 255, 0.1)';
+      passkeyQuotaBadgeEl.style.borderColor = 'rgba(0, 240, 255, 0.35)';
+      passkeyQuotaBadgeEl.style.color = '#00f0ff';
+      passkeyQuotaBadgeEl.innerHTML = `PASSKEYS: <span id="passkey-quota-count" style="color: #00ff88; font-weight: bold;">${passkeysUsed}</span> / ${maxPasskeys} USED`;
       if (solutionInstructionTextEl) {
-        solutionInstructionTextEl.textContent = 'Enter the secret direct passkey to bypass this challenge.';
+        solutionInstructionTextEl.textContent = `Enter the code output / answer OR enter a master passkey to bypass (${remaining} of ${maxPasskeys} passkeys remaining).`;
+      }
+    }
+  };
+
+  // Passkey Limit Popup Modal elements
+  const modalPasskeyLimitEl = document.getElementById('modal-passkey-limit');
+  const btnClosePasskeyLimitEl = document.getElementById('btn-close-passkey-limit');
+
+  const showPasskeyLimitModal = (msg) => {
+    if (modalPasskeyLimitEl) {
+      if (msg && document.getElementById('passkey-limit-popup-msg')) {
+        document.getElementById('passkey-limit-popup-msg').innerHTML = msg;
+      }
+      modalPasskeyLimitEl.classList.add('active');
+    }
+  };
+
+  if (btnClosePasskeyLimitEl && modalPasskeyLimitEl) {
+    btnClosePasskeyLimitEl.addEventListener('click', () => {
+      modalPasskeyLimitEl.classList.remove('active');
+    });
+    modalPasskeyLimitEl.addEventListener('click', (e) => {
+      if (e.target === modalPasskeyLimitEl) {
+        modalPasskeyLimitEl.classList.remove('active');
       }
     });
   }
@@ -139,6 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Progress Tracker Dots
       renderProgress(session.questionsSolved || 0);
+
+      // Passkey Quota Sync
+      passkeysUsed = session.passkeysUsed || 0;
+      maxPasskeys = session.maxPasskeys || 3;
+      updatePasskeyQuotaDisplay();
 
       // Handle Trap Mode vs Normal Question Mode
       if (session.currentTrap) {
@@ -538,21 +571,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  // Handle Direct Passkey & Answer Submission
+  // Handle Unified Solution (Answer or Direct Passkey) Submission
   passkeyFormEl.addEventListener('submit', async (e) => {
     e.preventDefault();
     App.hideAlert('alert-box');
 
-    const passkey = passkeyInputEl.value.trim();
+    const inputVal = passkeyInputEl.value.trim();
 
     // If input is empty but 6 clues are selected, advance with clues
-    if (!passkey && selectedClues.size === 6) {
+    if (!inputVal && selectedClues.size === 6) {
       submitCluesHandler();
       return;
     }
 
-    if (!passkey) {
-      App.showAlert('alert-box', 'Enter code output / passkey below, or select 6 clues above to advance.', 'alert-danger');
+    if (!inputVal) {
+      App.showAlert('alert-box', 'Enter answer or passkey below, or select 6 clues above to advance.', 'alert-danger');
       return;
     }
 
@@ -562,63 +595,52 @@ document.addEventListener('DOMContentLoaded', () => {
     btnSubmitPasskey.innerHTML = '<span class="btn-icon">⏳</span> VERIFYING...';
 
     try {
-      // First attempt passkey bypass endpoint
-      const response = await fetch(`/api/game/${sessionId}/passkey`, {
+      const ansResp = await fetch(`/api/game/${sessionId}/answer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passkey })
+        body: JSON.stringify({ answer: inputVal })
       });
+      const ansData = await ansResp.json();
 
-      const data = await response.json();
+      if (ansResp.ok && ansData.success) {
+        if (ansData.passkeysUsed !== undefined) {
+          passkeysUsed = ansData.passkeysUsed;
+        }
+        updatePasskeyQuotaDisplay();
 
-      if (response.ok && data.success) {
-        App.showAlert('alert-box', data.message || '✓ DIRECT ACCESS GRANTED\n\nBYPASSING CLUE ANALYSIS...', 'alert-success');
+        const successMsg = ansData.bypassedWithPasskey
+          ? `✓ DIRECT ACCESS GRANTED (PASSKEY USED: ${passkeysUsed}/${maxPasskeys})\n\nBYPASSING STAGE...`
+          : (ansData.message || '✓ ACCESS KEY VERIFIED\n✓ PUZZLE SOLVED');
+
+        App.showAlert('alert-box', successMsg, 'alert-success');
         passkeyInputEl.disabled = false;
         btnSubmitPasskey.disabled = false;
         btnSubmitPasskey.innerHTML = prevBtnHtml;
 
-        if (data.completed || data.escaped) {
-          setTimeout(() => {
-            window.location.href = '/result.html';
-          }, 1200);
+        if (ansData.completed || ansData.escaped) {
+          setTimeout(() => { window.location.href = '/result.html'; }, 1200);
         } else {
-          setTimeout(() => {
-            App.hideAlert('alert-box');
-            loadGameState();
-          }, 1000);
+          setTimeout(() => { App.hideAlert('alert-box'); loadGameState(); }, 1000);
         }
       } else {
-        // Fallback: check regular answer endpoint
-        const ansResp = await fetch(`/api/game/${sessionId}/answer`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ answer: passkey })
-        });
-        const ansData = await ansResp.json();
-
-        if (ansResp.ok && ansData.success) {
-          App.showAlert('alert-box', ansData.message || '✓ ACCESS KEY VERIFIED\n✓ PUZZLE SOLVED', 'alert-success');
+        if (ansData.passkeysUsed !== undefined) {
+          passkeysUsed = ansData.passkeysUsed;
+        }
+        if (ansData.limitReached || passkeysUsed >= maxPasskeys) {
+          passkeysUsed = maxPasskeys;
+          updatePasskeyQuotaDisplay();
+          showPasskeyLimitModal(ansData.message);
+        }
+        App.showAlert('alert-box', ansData.message || '✗ INCORRECT SOLUTION', 'alert-danger');
+        setTimeout(() => {
           passkeyInputEl.disabled = false;
           btnSubmitPasskey.disabled = false;
           btnSubmitPasskey.innerHTML = prevBtnHtml;
-
-          if (ansData.completed || ansData.escaped) {
-            setTimeout(() => { window.location.href = '/result.html'; }, 1200);
-          } else {
-            setTimeout(() => { App.hideAlert('alert-box'); loadGameState(); }, 1000);
-          }
-        } else {
-          App.showAlert('alert-box', ansData.message || data.message || '✗ INCORRECT ANSWER OR PASSKEY', 'alert-danger');
-          setTimeout(() => {
-            passkeyInputEl.disabled = false;
-            btnSubmitPasskey.disabled = false;
-            btnSubmitPasskey.innerHTML = prevBtnHtml;
-          }, 1400);
-        }
+        }, 1400);
       }
     } catch (err) {
       console.error(err);
-      App.showAlert('alert-box', 'Network error submitting direct passkey.', 'alert-danger');
+      App.showAlert('alert-box', 'Network error submitting solution.', 'alert-danger');
       passkeyInputEl.disabled = false;
       btnSubmitPasskey.disabled = false;
       btnSubmitPasskey.innerHTML = prevBtnHtml;
